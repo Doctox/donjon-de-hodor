@@ -140,10 +140,11 @@ function hodorPoseFromStory(text, tone) {
   const content = normalizeText(text);
   if (/monte-charge|service client/.test(content)) return "walk";
   if (/malediction|formulaire|vexee/.test(content)) return "question";
-  if (/fresque|ressemble|personne ne sait|pourquoi|mystere|etrange|bizarre/.test(content)) return "question";
+  if (/fresque|ressemble|personne ne sait|pourquoi|mystere|etrange|bizarre|statue|salle est vide|coffre.*vide|dramatique/.test(content)) return "question";
   if (/tu l'as deja|deja|dommage|rien|vide|affamee|pauvret/.test(content)) return "releve";
-  if (/mort|tombe|ko|retour aux geoles/.test(content)) return "dead";
+  if (/mort|ko|retour aux geoles|tombe avec la dignite/.test(content)) return "dead";
   if (/-\d+\s*coeur|mord|tire|violence|baffe|croche-pied|degat|douloureux|coup/.test(content)) return "hurt";
+  if (/trappe|descente|trouves un objet|tu trouves un objet|recuperes un objet/.test(content)) return "victory";
   if (/achete|echoppe|vendeur|village/.test(content)) return "walk";
   if (tone === "good" || /\+\d+\s*po|\+\d+\s*coeur|trouves|ramasses|recuperes|gagne/.test(content)) return "victory";
   return "idle";
@@ -211,8 +212,9 @@ function splitSentenceEffect(sentence) {
 
   const goldEffect = goldEffectFromSentence(sentence);
   if (goldEffect) {
+    const replacement = goldEffect.startsWith("-") ? "des pieces" : "quelques pieces";
     return {
-      story: cleanupStorySentence(sentence.replace(/\d+\s*PO/i, "")),
+      story: cleanupStorySentence(sentence.replace(/\d+\s*PO/i, replacement)),
       reward: goldEffect,
     };
   }
@@ -931,10 +933,15 @@ function bankDepositText(deposited, soldItems) {
     return "Le banquier regarde ta bourse vide, soupire, puis referme son registre avec beaucoup de professionnalisme.";
   }
 
-  const itemText = soldItems.details.length
-    ? ` Il revend aussi tes objets pour ${soldItems.total} PO.`
-    : "";
-  return `Le banquier depose ${deposited} PO de ta bourse.${itemText} Total sauvegarde : ${deposited + soldItems.total} PO.`;
+  const lines = [];
+  if (deposited) {
+    lines.push("Le banquier depose ta bourse dans le coffre.");
+  }
+  if (soldItems.details.length) {
+    lines.push("Il revend aussi tes objets avec une joie trop visible.");
+  }
+  lines.push(`Total sauvegarde : ${deposited + soldItems.total} PO.`);
+  return lines.join(" ");
 }
 
 function startRun() {
@@ -1146,9 +1153,7 @@ function renderInventory() {
   inventory.textContent = "";
 
   if (!state.inventory.length) {
-    inventory.textContent = hasOwnedUpgrades()
-      ? "Aucun objet dans les poches. Les combines, elles, restent dans la tete."
-      : "Rien, sauf une confiance injustifiee.";
+    inventory.textContent = hasOwnedUpgrades() ? "Vide." : "Rien.";
     return;
   }
 

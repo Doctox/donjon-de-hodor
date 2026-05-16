@@ -19,8 +19,10 @@
 }
 
 body {
+  height: 100dvh;
   min-height: 100dvh;
   margin: 0;
+  overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(216, 170, 61, 0.12), transparent 30rem),
     linear-gradient(135deg, #15130f, #201a13 58%, #11100d);
@@ -43,10 +45,12 @@ button:disabled {
 .game-shell {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
+  height: 100dvh;
   min-height: 100dvh;
+  overflow: hidden;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  padding: 14px 0;
+  padding: clamp(6px, 1.4dvh, 14px) 0;
 }
 
 .topbar {
@@ -54,7 +58,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 8px;
+  margin-bottom: clamp(4px, 0.8dvh, 8px);
 }
 
 .score-strip {
@@ -103,7 +107,7 @@ button:disabled {
 .loss-score {
   position: fixed;
   left: 14px;
-  top: clamp(210px, 34dvh, 320px);
+  top: clamp(260px, 46dvh, 440px);
   bottom: auto;
   z-index: 8;
   opacity: 0.82;
@@ -262,8 +266,8 @@ h1 {
 .stats-grid {
   display: grid;
   grid-template-columns: 1.1fr 1.1fr minmax(0, 1.35fr) minmax(150px, 0.75fr);
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: clamp(6px, 1dvh, 10px);
+  margin-bottom: clamp(6px, 1dvh, 10px);
 }
 
 .stat-inventory {
@@ -283,18 +287,18 @@ h1 {
 }
 
 .stat {
-  min-height: 76px;
+  min-height: clamp(56px, 8.5dvh, 76px);
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(37, 32, 22, 0.88);
-  padding: 12px;
+  padding: clamp(8px, 1.25dvh, 12px);
 }
 
 .stat strong {
   display: block;
-  margin-top: 8px;
+  margin-top: clamp(4px, 0.7dvh, 8px);
   font-family: Arial, sans-serif;
-  font-size: 1.7rem;
+  font-size: clamp(1.25rem, 2.9dvh, 1.7rem);
 }
 
 .stat strong span {
@@ -333,7 +337,7 @@ h1 {
 }
 
 .purse-visual {
-  width: 68px;
+  width: clamp(46px, 7.2dvh, 68px);
   aspect-ratio: 1;
   background: url("assets/Ui/Bourse vide.png") center / contain no-repeat;
   filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.28));
@@ -404,7 +408,8 @@ h1 {
   content: attr(data-tooltip);
   position: absolute;
   left: 0;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);
+  bottom: auto;
   z-index: 20;
   width: min(260px, 78vw);
   border: 1px solid rgba(216, 170, 61, 0.35);
@@ -427,7 +432,8 @@ h1 {
   content: "";
   position: absolute;
   left: 18px;
-  bottom: calc(100% + 4px);
+  top: calc(100% + 4px);
+  bottom: auto;
   z-index: 21;
   width: 10px;
   height: 10px;
@@ -435,7 +441,7 @@ h1 {
   border-right: 1px solid rgba(216, 170, 61, 0.35);
   border-bottom: 1px solid rgba(216, 170, 61, 0.35);
   opacity: 0;
-  rotate: 45deg;
+  rotate: 225deg;
   transition: opacity 120ms ease;
 }
 
@@ -477,7 +483,7 @@ h1 {
 }
 
 .heart-icon {
-  width: 30px;
+  width: clamp(22px, 3.5dvh, 30px);
   aspect-ratio: 1;
   background: url("assets/Ui/coeur vide.png") center / contain no-repeat;
   filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.24));
@@ -518,7 +524,8 @@ h1 {
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(180deg, #39372f 0%, #211d18 58%, #14110e 100%);
   background-size: 72px 54px, 72px 54px, 100% 100%;
-  padding: 18px;
+  gap: clamp(6px, 1dvh, 12px);
+  padding: clamp(8px, 1.5dvh, 18px);
 }
 
 .scene::after {
@@ -535,7 +542,7 @@ h1 {
   justify-self: center;
   align-self: end;
   z-index: 2;
-  width: clamp(300px, 42vw, 520px);
+  width: clamp(190px, 34dvh, 460px);
   aspect-ratio: 1 / 1;
   background-image: url("assets/Hodor/hodor.png");
   background-repeat: no-repeat;
@@ -662,10 +669,12 @@ h1 {
   position: relative;
   z-index: 1;
   max-width: 100%;
-  min-height: 88px;
+  max-height: clamp(78px, 18dvh, 150px);
+  min-height: 0;
+  overflow: auto;
   border-left: 4px solid var(--gold);
   background: rgba(24, 22, 17, 0.78);
-  padding: 14px 18px;
+  padding: clamp(9px, 1.25dvh, 14px) clamp(12px, 1.6dvh, 18px);
   animation: panelIn 180ms ease both;
 }
 
@@ -692,9 +701,10 @@ h1 {
 }
 
 .story {
-  margin: 8px 0 0;
-  font-size: clamp(1rem, 1.75vw, 1.24rem);
-  line-height: 1.48;
+  margin: clamp(4px, 0.7dvh, 8px) 0 0;
+  font-size: clamp(0.95rem, 2dvh, 1.16rem);
+  line-height: 1.34;
+  overflow-wrap: anywhere;
 }
 
 .story .po-text {
@@ -770,11 +780,12 @@ h1 {
   z-index: 2;
   display: grid;
   grid-template-columns: max-content minmax(220px, 1fr);
-  gap: 18px;
+  gap: clamp(8px, 1.3dvh, 18px);
   align-items: start;
   width: 100%;
   max-width: 100%;
-  margin: 8px 0 0;
+  min-height: 0;
+  margin: clamp(3px, 0.7dvh, 8px) 0 0;
 }
 
 .reward-panel {
@@ -897,7 +908,7 @@ h1 {
   background:
     linear-gradient(180deg, rgba(24, 22, 17, 0.04), rgba(0, 0, 0, 0.22)),
     rgba(15, 13, 10, 0.32);
-  padding: 10px 10px 4px;
+  padding: clamp(6px, 1dvh, 10px) clamp(6px, 1dvh, 10px) 0;
 }
 
 .scene.is-village .action-zone {
@@ -913,10 +924,10 @@ h1 {
   align-items: center;
   gap: 14px;
   max-width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: clamp(6px, 1dvh, 14px);
   border: 1px solid rgba(244, 234, 214, 0.18);
   border-radius: 8px;
-  padding: 14px 18px;
+  padding: clamp(10px, 1.4dvh, 14px) 18px;
   box-shadow: 0 18px 28px rgba(0, 0, 0, 0.28);
 }
 
@@ -973,7 +984,7 @@ h1 {
 .door {
   position: relative;
   aspect-ratio: 0.75;
-  min-height: clamp(210px, 29dvh, 330px);
+  min-height: clamp(145px, 23dvh, 285px);
   border: 0;
   border-radius: 8px;
   background-color: transparent;
@@ -1244,11 +1255,46 @@ h1 {
 }
 
 .scene.is-village {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.78fr) minmax(330px, 1.22fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(8px, 1.2dvh, 14px) 18px;
   background:
     linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(180deg, #393123 0%, #241f18 55%, #15120f 100%);
   background-size: 72px 54px, 72px 54px, 100% 100%;
+}
+
+.scene.is-village .ko-banner,
+.scene.is-village .win-banner {
+  grid-column: 1 / -1;
+}
+
+.scene.is-village .story-panel {
+  grid-column: 1 / -1;
+}
+
+.scene.is-village .reward-row {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: center;
+  margin: 0;
+}
+
+.scene.is-village .hodor-sprite {
+  width: clamp(210px, 38dvh, 440px);
+}
+
+.scene.is-village .action-zone {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: center;
+  margin: 0;
+  border-top: 0;
+  background: rgba(15, 13, 10, 0.18);
+  padding: clamp(6px, 1dvh, 10px);
 }
 
 .scene.is-combat {
@@ -1279,7 +1325,7 @@ h1 {
 }
 
 .scene.is-combat .hodor-sprite {
-  width: min(100%, clamp(260px, 34vw, 390px));
+  width: min(100%, clamp(300px, 42vw, 430px));
   align-self: center;
   justify-self: center;
 }
@@ -1303,7 +1349,7 @@ h1 {
 }
 
 .scene.is-combat .monster-target {
-  width: min(100%, 390px);
+  width: min(100%, 330px);
 }
 
 @keyframes combatPulse {
@@ -1336,13 +1382,13 @@ h1 {
 .village-stat-card {
   display: grid;
   align-content: center;
-  min-height: clamp(190px, 28dvh, 280px);
+  min-height: clamp(120px, 18dvh, 210px);
   border: 1px solid rgba(216, 170, 61, 0.24);
   border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(216, 170, 61, 0.16), rgba(24, 22, 17, 0.86)),
     rgba(24, 22, 17, 0.82);
-  padding: 20px;
+  padding: clamp(12px, 1.6dvh, 20px);
 }
 
 .village-stat-card > span {
@@ -1382,7 +1428,7 @@ h1 {
 
 .building {
   position: relative;
-  min-height: clamp(160px, 24dvh, 240px);
+  min-height: clamp(120px, 18dvh, 220px);
   overflow: hidden;
   border: 1px solid rgba(244, 234, 214, 0.13);
   border-radius: 8px;
@@ -1449,7 +1495,7 @@ h1 {
 }
 
 .bank-building {
-  min-height: clamp(190px, 28dvh, 280px);
+  min-height: clamp(130px, 19dvh, 220px);
   border-color: transparent;
   background: url("assets/Ui/Banque.png") center / contain no-repeat;
   background-color: transparent;
@@ -1494,7 +1540,7 @@ h1 {
 }
 
 .tavern-building {
-  min-height: clamp(190px, 28dvh, 280px);
+  min-height: clamp(130px, 19dvh, 220px);
   border-color: transparent;
   background: url("assets/Ui/Taverne.png") center / contain no-repeat;
   background-color: transparent;
@@ -1502,7 +1548,7 @@ h1 {
 }
 
 .shop-building {
-  min-height: clamp(190px, 28dvh, 280px);
+  min-height: clamp(130px, 19dvh, 220px);
   border-color: transparent;
   background: url("assets/Ui/Echoppe.png") center / contain no-repeat;
   background-color: transparent;
@@ -1663,7 +1709,210 @@ h1 {
 
 }
 
+@media (min-width: 621px) and (max-width: 760px) {
+  .game-shell {
+    width: min(100% - 20px, 720px);
+  }
+
+  .topbar {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1.05fr 1.05fr minmax(0, 1.35fr) minmax(120px, 0.72fr);
+  }
+
+  .stat-inventory {
+    order: 3;
+  }
+
+  .stat-place {
+    order: 4;
+  }
+
+  .stat-purse {
+    order: 1;
+  }
+
+  .stat-life {
+    order: 2;
+  }
+
+  .scene.is-village {
+    grid-template-columns: minmax(180px, 0.7fr) minmax(340px, 1.3fr);
+  }
+}
+
+@media (max-height: 840px) {
+  .stats-grid {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .stat {
+    min-height: 54px;
+    padding: 8px 10px;
+  }
+
+  .stat-inventory p {
+    margin-top: 5px;
+    font-size: 0.88rem;
+    line-height: 1.15;
+  }
+
+  .upgrade-summary {
+    margin-top: 5px;
+  }
+
+  .item-chip,
+  .upgrade-chip {
+    padding-block: 3px;
+    font-size: 0.72rem;
+  }
+
+  .heart-row {
+    gap: 4px;
+    margin-top: 0;
+  }
+
+  .heart-icon {
+    width: 22px;
+  }
+
+  .stat-purse {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .purse-visual {
+    width: 46px;
+  }
+
+  .stat-purse > div strong {
+    font-size: 1.55rem;
+  }
+
+  .story-panel {
+    padding: 8px 12px;
+  }
+
+  .story {
+    font-size: 0.94rem;
+    line-height: 1.28;
+  }
+
+  .reward-panel {
+    padding: 8px 11px;
+  }
+
+  .hodor-sprite {
+    width: clamp(170px, 30dvh, 360px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: clamp(190px, 34dvh, 360px);
+  }
+
+  .door {
+    min-height: clamp(126px, 21dvh, 230px);
+  }
+
+  .village-choices {
+    gap: 10px;
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(108px, 16dvh, 170px);
+  }
+
+  .village-stat-card strong {
+    margin-top: 4px;
+    font-size: 0.88rem;
+  }
+
+  .village-stat-card small {
+    margin-top: 6px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-height: 720px) {
+  .game-shell {
+    padding-block: 4px;
+  }
+
+  .topbar {
+    margin-bottom: 3px;
+  }
+
+  .stats-grid {
+    margin-bottom: 4px;
+  }
+
+  .stat {
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+
+  .eyebrow,
+  .location,
+  .stat > span {
+    font-size: 0.68rem;
+  }
+
+  .story {
+    font-size: 0.88rem;
+    line-height: 1.22;
+  }
+
+  .scene {
+    padding: 7px;
+  }
+
+  .hodor-sprite {
+    width: clamp(145px, 27dvh, 310px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: clamp(160px, 30dvh, 310px);
+  }
+
+  .door {
+    min-height: clamp(108px, 19dvh, 200px);
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(94px, 15dvh, 145px);
+  }
+
+  .ko-banner strong,
+  .win-banner strong {
+    font-size: clamp(1.7rem, 5dvh, 2.8rem);
+  }
+}
+
 @media (max-width: 520px) {
+  body {
+    overflow: auto;
+  }
+
+  .game-shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .scene.is-village {
+    display: flex;
+  }
+
   .village-choices {
     grid-template-columns: 1fr;
   }
