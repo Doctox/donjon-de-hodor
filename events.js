@@ -172,7 +172,7 @@ const eventPool = [
       if (Math.random() < 0.55) {
         return "Tu entres dans une salle remplie de leviers. Tu n'en touches aucun. Rare moment de sagesse.";
       }
-      return takeDamage(1, "Tu entres dans une salle remplie de leviers. Tu les touches tous. Le donjon applaudit. -1 coeur.");
+      return takeDamage(1, "Tu entres dans une salle remplie de leviers. Tu les touches tous. Le donjon applaudit, puis te punit pour l'exemple. -1 coeur.");
     },
   },
   {

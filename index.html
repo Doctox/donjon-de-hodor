@@ -19,10 +19,6 @@
               <span>Perdus</span>
               <strong id="loss-count">0</strong>
             </div>
-            <div class="bank-score win-score" id="win-score">
-              <span>Sorties</span>
-              <strong id="win-count">0</strong>
-            </div>
           </div>
         </div>
         <div class="debug-menu">
@@ -41,9 +37,23 @@
             </details>
             <details class="debug-section debug-combat-menu">
               <summary>Combat</summary>
-              <button id="debug-combat-rat" type="button" onclick="debugStartCombat('rat')">Rat</button>
-              <button id="debug-combat-skeleton" type="button" onclick="debugStartCombat('skeleton')">Squelette</button>
-              <button id="debug-combat-guard" type="button" onclick="debugStartCombat('guard')">Guard</button>
+              <button type="button" data-debug-combat="rat">Rat</button>
+              <button type="button" data-debug-combat="skeleton">Squelette</button>
+              <button type="button" data-debug-combat="guard">Guard</button>
+            </details>
+            <details class="debug-section debug-stuff-menu">
+              <summary>Stuff</summary>
+              <button type="button" data-debug-stuff="Casque Trop Petit">Casque Trop Petit</button>
+              <button type="button" data-debug-stuff="Hache Emoussee">Hache Emoussee</button>
+              <button type="button" data-debug-stuff="Sandales de Panique">Sandales de Panique</button>
+              <button type="button" data-debug-stuff="Medaillon du Presque-Heros">Medaillon du Presque-Heros</button>
+              <button type="button" data-debug-stuff="Slip de Guerre">Slip de Guerre</button>
+              <button type="button" data-debug-stuff="Boulet au Pied">Boulet au Pied</button>
+              <button type="button" data-debug-stuff="Chaussette Porte-Bonheur">Chaussette Porte-Bonheur</button>
+              <button type="button" data-debug-stuff="Caillou Affectif">Caillou Affectif</button>
+              <button type="button" data-debug-stuff="Cape Trop Longue">Cape Trop Longue</button>
+              <button type="button" data-debug-stuff="Gants Collants">Gants Collants</button>
+              <button type="button" id="debug-clear-stuff">Vider stuff</button>
             </details>
           </div>
         </div>
@@ -56,10 +66,6 @@
         </article>
         <article class="stat stat-life">
           <div class="heart-row" id="heart-row" aria-label="Vie"></div>
-          <div class="life-wrap" aria-label="Vie" hidden>
-            <div class="life-bar" id="life-bar"></div>
-          </div>
-          <strong id="life-label">3 / 3</strong>
         </article>
         <article class="stat stat-purse">
           <div class="purse-visual" id="purse-visual" aria-hidden="true"></div>
@@ -67,12 +73,26 @@
             <strong><span id="carried-gold">0</span> PO</strong>
           </div>
         </article>
-        <article class="stat stat-inventory">
-          <span>Objets et combines</span>
-          <p id="inventory">Rien, sauf une confiance injustifiee.</p>
-          <div class="upgrade-summary" id="upgrade-summary"></div>
+        <article class="stat-inventory" aria-label="Inventaire">
+          <button class="inventory-toggle" id="inventory-toggle" type="button" aria-expanded="false" aria-controls="inventory-popover">
+            <span>Inventaire</span>
+          </button>
         </article>
       </section>
+
+      <div class="inventory-popover" id="inventory-popover" role="dialog" aria-label="Inventaire de Hodor" hidden>
+        <div class="inventory-card">
+          <div class="inventory-card-head">
+            <div>
+              <p class="inventory-eyebrow">Sac de Hodor</p>
+              <strong>Inventaire</strong>
+            </div>
+            <button class="inventory-close" id="inventory-close" type="button" aria-label="Fermer l'inventaire">x</button>
+          </div>
+          <div class="inventory-list" id="inventory"></div>
+          <div class="upgrade-summary" id="upgrade-summary"></div>
+        </div>
+      </div>
 
       <section class="scene" id="scene">
         <div class="ko-banner" id="ko-banner" hidden>
@@ -147,13 +167,6 @@
               <strong>Banque</strong>
               <small>Mettre les pieces a l'abri.</small>
             </button>
-            <div class="village-stat-card" aria-label="Statistiques">
-              <span>Statistiques</span>
-              <strong><span id="village-win-count">0</span> sorties miraculeuses</strong>
-              <strong><span id="village-loss-count">0</span> humiliations</strong>
-              <strong><span id="village-bank-count">0</span> PO planquees</strong>
-              <small id="village-shame">Dignite estimee : introuvable</small>
-            </div>
             <button class="building tavern-building" id="tavern-building" type="button">
               <span class="building-roof"></span>
               <strong>Taverne</strong>
@@ -164,6 +177,13 @@
               <strong>Echoppe Douteuse</strong>
               <small>Acheter du progres vaguement legal.</small>
             </button>
+            <div class="village-stat-card" aria-label="Statistiques">
+              <span>Statistiques</span>
+              <strong><span id="village-win-count">0</span> sorties miraculeuses</strong>
+              <strong><span id="village-loss-count">0</span> humiliations</strong>
+              <strong><span id="village-bank-count">0</span> PO planquees</strong>
+              <small id="village-shame">Dignite estimee : introuvable</small>
+            </div>
           </div>
 
           <div class="shop-panel" id="shop-panel" hidden>

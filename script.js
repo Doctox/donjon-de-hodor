@@ -6,7 +6,7 @@ const STATS_KEY = "barbare_portes_binouse_stats";
 
 let fallbackBankGold = 0;
 let fallbackUpgrades = {};
-let fallbackStats = { losses: 0, wins: 0 };
+let fallbackStats = { losses: 0, wins: 0, goldBankedTotal: 0 };
 
 const state = {
   screen: "cell",
@@ -18,7 +18,6 @@ const state = {
   bankGold: loadBankGold(),
   inventory: [],
   runEnded: false,
-  lastDeath: "",
   combat: null,
   godMode: false,
   upgrades: loadUpgrades(),
@@ -34,9 +33,25 @@ const state = {
   winRecorded: false,
   inputLocked: false,
   hodorPose: "idle",
+  pendingCoinGain: 0,
+  pendingPurseLoss: false,
+  renderedLife: null,
 };
 
-const $ = (id) => document.getElementById(id);
+const elementCache = new Map();
+const $ = (id) => {
+  if (!elementCache.has(id)) {
+    elementCache.set(id, document.getElementById(id));
+  }
+  return elementCache.get(id);
+};
+
+const inventoryIconPaths = {
+  "Hache Emoussee": "assets/Hodor V0.1/Stuff/Hache/inv-hache.png",
+  "Medaillon du Presque-Heros": "assets/Hodor V0.1/Stuff/Medaillon du Presque-Heros/inv-medaillon.png",
+  "Sandales de Panique": "assets/Hodor V0.1/Stuff/Sandales de Panique/inv-sandale.png",
+  "Slip de Guerre": "assets/Hodor V0.1/Stuff/Slip de guerre/inv-slip de guerre.png",
+};
 
 document.addEventListener("click", (event) => {
   const door = event.target.closest(".door");
@@ -62,8 +77,28 @@ addClick("debug-toggle", toggleDebug);
 addClick("god-mode", toggleGodMode);
 addClick("debug-add-bank", debugAddBank);
 addClick("debug-go-village", debugGoVillage);
+addClick("debug-clear-stuff", debugClearStuff);
+addClick("inventory-toggle", toggleInventory);
+addClick("inventory-close", closeInventory);
 
-window.debugStartCombat = debugStartCombat;
+document.querySelectorAll("[data-debug-combat]").forEach((button) => {
+  button.addEventListener("click", () => debugStartCombat(button.dataset.debugCombat));
+});
+
+document.querySelectorAll("[data-debug-stuff]").forEach((button) => {
+  button.addEventListener("click", () => debugAddStuff(button.dataset.debugStuff));
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeInventory();
+});
+
+document.addEventListener("click", (event) => {
+  const popover = $("inventory-popover");
+  if (!popover || popover.hidden) return;
+  if (event.target.closest("#inventory-popover .inventory-card") || event.target.closest("#inventory-toggle")) return;
+  closeInventory();
+});
 
 render();
 
@@ -120,10 +155,17 @@ function saveStats() {
 
 function setStory(text, tone = "neutral") {
   state.storyTone = tone;
-  const split = splitStoryReward(text);
+  const storyText = deathStoryText(text);
+  const split = splitStoryReward(storyText);
   $("story").innerHTML = formatStory(split.story || "Hodor contemple le resultat avec une comprehension limitee.");
   setReward(split.reward);
-  state.hodorPose = hodorPoseFromStory(text, tone);
+  state.hodorPose = hodorPoseFromStory(storyText, tone);
+}
+
+function deathStoryText(text) {
+  if (state.screen !== "mort") return text;
+  if (/Les PO en poche sont perdues/i.test(text)) return text;
+  return `${text} Les PO en poche sont perdues. Les gardes te renvoient dans les geoles.`;
 }
 
 function setReward(text) {
@@ -134,10 +176,21 @@ function setReward(text) {
   panel.hidden = !text;
   rewardText.innerHTML = text ? formatStory(text) : "";
   $("scene").classList.toggle("no-reward", !text);
+  const rewardRaw = String(text || "");
+  const coinGain = rewardRaw.match(/\+(\d+)\s*PO/i);
+  state.pendingCoinGain = coinGain && !/banque/i.test(rewardRaw) ? Number(coinGain[1]) : 0;
+  state.pendingPurseLoss = /bourse perdue/i.test(rewardRaw);
 }
 
 function hodorPoseFromStory(text, tone) {
   const content = normalizeText(text);
+  const effectText = normalizeText(splitStoryReward(text).reward);
+  if (/\+\d+\s*po|banque\s*\+\d+\s*po/.test(effectText)) return "victory";
+  if (/-\d+\s*po|bourse perdue/.test(effectText)) return "releve";
+  if (/\+\d+\s*coeur|caillou affectif|hache emoussee|casque trop petit|sandales de panique|medaillon|chaussette|gants|slip|cape/.test(effectText)) return "victory";
+  if (/-\d+\s*etages/.test(effectText)) return "fuite";
+  if (/\+\d+\s*etages/.test(effectText)) return "walk";
+  if (/doublon|objet sauve|sauve/.test(effectText)) return "question";
   if (/monte-charge|service client/.test(content)) return "walk";
   if (/malediction|formulaire|vexee/.test(content)) return "question";
   if (/fresque|ressemble|personne ne sait|pourquoi|mystere|etrange|bizarre|statue|salle est vide|coffre.*vide|dramatique/.test(content)) return "question";
@@ -175,7 +228,7 @@ function splitSentenceEffect(sentence) {
   if (duplicate) {
     return {
       story: "Tu trouves un objet. Le donjon ricane doucement.",
-      reward: `${duplicate} doublon`,
+      reward: duplicate,
     };
   }
 
@@ -312,7 +365,10 @@ function knownItemInText(text) {
   const normalized = normalizeText(text);
   return Object.keys(itemDescriptions)
     .sort((a, b) => b.length - a.length)
-    .find((item) => normalized.includes(normalizeText(item))) || "";
+    .find((item) => {
+      if (normalized.includes(normalizeText(item))) return true;
+      return itemAliasesFor(item).some((alias) => normalized.includes(normalizeText(alias)));
+    }) || "";
 }
 
 function cleanupStorySentence(sentence) {
@@ -830,7 +886,7 @@ function takeDamage(amount, text) {
     state.life -= 1;
     if (state.life <= 0) {
       state.life = 0;
-      endRun("mort", `${text} La cape trop longue termine le travail avec un croche-pied historique.`);
+      endRun("mort");
     }
     return `${text} La cape trop longue s'enroule autour de tes jambes. -1 coeur bonus, puis elle se dechire.`;
   }
@@ -853,7 +909,7 @@ function takeDamage(amount, text) {
       return `${text} Medaillon du Presque-Heros explose et refuse la mort. Hodor ne comprend pas la procedure, mais il vit.`;
     }
     state.life = 0;
-    endRun("mort", `${text} Hodor tombe avec la dignite d'un sac de patates fatigue.`);
+    endRun("mort");
   }
   return text;
 }
@@ -877,14 +933,13 @@ function instantDeath(text) {
     return takeDamage(1, `${text} Instinct Presque Fiable transforme la mort en catastrophe moins definitive. -1 coeur.`);
   }
 
-  endRun("mort", text);
+  endRun("mort");
   return text;
 }
 
-function endRun(screen, reason) {
+function endRun(screen) {
   state.screen = screen;
   state.runEnded = true;
-  state.lastDeath = reason;
   state.combat = null;
   if (screen === "mort") {
     state.life = 0;
@@ -907,9 +962,12 @@ function depositGold() {
   state.villageLocation = "Banque";
   const deposited = state.carriedGold;
   const soldItems = sellInventory();
-  state.bankGold += deposited + soldItems.total;
+  const totalDeposited = deposited + soldItems.total;
+  state.bankGold += totalDeposited;
+  state.stats.goldBankedTotal = (state.stats.goldBankedTotal || 0) + totalDeposited;
   state.carriedGold = 0;
   saveBankGold(state.bankGold);
+  saveStats();
   setStory(bankDepositText(deposited, soldItems), deposited || soldItems.total ? "good" : "neutral");
   render();
 }
@@ -957,9 +1015,9 @@ function startRun() {
   state.carriedGold = 0;
   state.inventory = [];
   state.runEnded = false;
-  state.lastDeath = "";
   state.combat = null;
   state.doorHints = [];
+  state.inputLocked = false;
   state.floorShift = 0;
   if (resetLossStreak) {
     state.runLosses = 0;
@@ -1079,7 +1137,6 @@ function debugStartCombat(monsterId) {
   const monster = monsters[monsterId] || monsters.rat;
   state.runEnded = false;
   state.showWinBanner = false;
-  state.lastDeath = "";
   state.inputLocked = false;
   state.lossRecorded = false;
   state.winRecorded = false;
@@ -1090,6 +1147,35 @@ function debugStartCombat(monsterId) {
   $("debug-panel").hidden = true;
   $("debug-toggle").setAttribute("aria-expanded", "false");
   setStory(startCombat(monster), "neutral");
+  render();
+}
+
+function debugAddStuff(item) {
+  if (!itemDescriptions[item]) {
+    setStory("Debug : objet introuvable. Meme le menu triche vient de rater son jet.", "bad");
+    render();
+    return;
+  }
+
+  const alreadyEquipped = hasItem(item);
+  if (!alreadyEquipped) {
+    state.inventory.push(item);
+  }
+
+  state.hodorPose = "victory";
+  setStory(
+    alreadyEquipped
+      ? `Debug : ${item} est deja dans les poches. Hodor insiste quand meme pour avoir l'air equipe.`
+      : `Debug : ${item} ajoute. Hodor parade avec un serieux inquietant.`,
+    alreadyEquipped ? "neutral" : "good"
+  );
+  render();
+}
+
+function debugClearStuff() {
+  state.inventory = [];
+  state.hodorPose = "question";
+  setStory("Debug : stuff vide. Hodor regarde ses mains comme si c'etait un plan.", "neutral");
   render();
 }
 
@@ -1148,27 +1234,66 @@ function hasItem(item) {
   return state.inventory.includes(item);
 }
 
+function toggleInventory() {
+  const popover = $("inventory-popover");
+  const toggle = $("inventory-toggle");
+  const shouldOpen = popover.hidden;
+  popover.hidden = !shouldOpen;
+  toggle.setAttribute("aria-expanded", String(shouldOpen));
+}
+
+function closeInventory() {
+  const popover = $("inventory-popover");
+  const toggle = $("inventory-toggle");
+  if (!popover || popover.hidden) return;
+  popover.hidden = true;
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
 function renderInventory() {
   const inventory = $("inventory");
+  const toggle = $("inventory-toggle");
   inventory.textContent = "";
+  const total = state.inventory.length + Object.values(state.upgrades).filter((level) => level > 0).length;
+  if (toggle) {
+    toggle.classList.toggle("has-items", total > 0);
+  }
 
   if (!state.inventory.length) {
-    inventory.textContent = hasOwnedUpgrades() ? "Vide." : "Rien.";
+    const empty = document.createElement("p");
+    empty.className = "inventory-empty";
+    empty.textContent = "Aucun objet dans le sac. Beaucoup d'assurance, par contre.";
+    inventory.appendChild(empty);
     return;
   }
 
   state.inventory.forEach((item) => {
+    const icon = inventoryIconPaths[item];
+    if (icon) {
+      const button = document.createElement("button");
+      button.className = "inventory-item";
+      button.type = "button";
+      button.dataset.tooltip = itemDescriptions[item] || "Objet mystere. Meme le donjon a perdu la notice.";
+
+      const image = document.createElement("img");
+      image.src = icon;
+      image.alt = item;
+
+      const label = document.createElement("span");
+      label.textContent = item;
+
+      button.append(image, label);
+      inventory.appendChild(button);
+      return;
+    }
+
     const chip = document.createElement("span");
-    chip.className = "item-chip";
+    chip.className = "item-chip inventory-fallback";
     chip.tabIndex = 0;
     chip.textContent = item;
     chip.dataset.tooltip = itemDescriptions[item] || "Objet mystere. Meme le donjon a perdu la notice.";
     inventory.appendChild(chip);
   });
-}
-
-function hasOwnedUpgrades() {
-  return Object.values(state.upgrades).some((level) => level > 0);
 }
 
 function renderUpgradeSummary() {
@@ -1224,17 +1349,10 @@ function render() {
   $("bank-gold").textContent = state.bankGold;
   $("bank-building-gold").textContent = state.bankGold;
   $("loss-count").textContent = state.runLosses;
-  $("village-loss-count").textContent = state.runLosses;
-  $("win-count").textContent = state.stats.wins;
+  $("village-loss-count").textContent = state.stats.losses || 0;
   $("village-win-count").textContent = state.stats.wins;
-  $("village-bank-count").textContent = state.bankGold;
+  $("village-bank-count").textContent = state.stats.goldBankedTotal || 0;
   $("village-shame").textContent = villageShameText();
-  $("life-label").textContent = `${state.life} / ${state.maxLife}`;
-  const lifeRatio = state.maxLife ? Math.max(0, state.life / state.maxLife) : 0;
-  const lifeBar = $("life-bar");
-  lifeBar.style.width = `${lifeRatio * 100}%`;
-  lifeBar.className = "life-bar";
-  lifeBar.classList.add(lifeRatio >= 0.99 ? "life-high" : lifeRatio > 0.33 ? "life-mid" : "life-low");
   renderHearts();
   renderPurse();
   renderInventory();
@@ -1253,12 +1371,12 @@ function render() {
   $("scene").classList.toggle("is-dungeon", isDungeon || isCombat);
   $("scene").classList.toggle("is-cell", isCell);
   $("scene").classList.toggle("is-locked", state.inputLocked);
+  $("scene").classList.toggle("has-win-banner", isVillage && state.showWinBanner);
   $("scene").classList.toggle("story-good", state.storyTone === "good" && !isDead);
   $("scene").classList.toggle("story-bad", state.storyTone === "bad" && !isDead);
   $("scene").classList.toggle("story-neutral", state.storyTone === "neutral" && !isDead);
   $("bank-score").hidden = !isShop;
   $("loss-score").hidden = isVillage || isShop;
-  $("win-score").hidden = true;
   renderHodor();
 
   $("location").textContent = isVillage
@@ -1310,19 +1428,80 @@ function render() {
     ? "La porte grince. Hodor appelle ca de la discretion."
     : "Les gardes t'ont ramene en haut. Ils auraient du mieux fermer.";
 
-  if (isDead) {
-    setStory(`${state.lastDeath} Les PO en poche sont perdues. Les gardes te renvoient dans les geoles.`, "bad");
+  playPendingCoinAnimation();
+  playPendingPurseLossAnimation();
+}
+
+function playPendingCoinAnimation() {
+  if (!state.pendingCoinGain || state.pendingCoinGain <= 0) return;
+  const rewardPanel = $("reward-panel");
+  const purse = document.querySelector(".stat-purse .purse-visual") || document.querySelector(".stat-purse");
+  if (!rewardPanel || rewardPanel.hidden || !purse) return;
+
+  const from = rewardPanel.getBoundingClientRect();
+  const to = purse.getBoundingClientRect();
+  if (!from.width || !to.width) return;
+
+  const coinX = to.left + to.width / 2 - (from.left + from.width / 2);
+  const coinY = to.top + to.height / 2 - (from.top + from.height / 2);
+  const coinCount = Math.min(5, Math.max(1, state.pendingCoinGain));
+  for (let index = 0; index < coinCount; index += 1) {
+    const coin = document.createElement("span");
+    const offset = (index - (coinCount - 1) / 2) * 18;
+    coin.className = "flying-coin";
+    coin.style.setProperty("--coin-x", `${coinX}px`);
+    coin.style.setProperty("--coin-y", `${coinY}px`);
+    coin.style.setProperty("--coin-mid-x", `${coinX * (0.48 + index * 0.035)}px`);
+    coin.style.setProperty("--coin-mid-y", `${coinY * (0.52 + index * 0.025)}px`);
+    coin.style.setProperty("--coin-drift", `${offset}px`);
+    coin.style.setProperty("--coin-delay", `${index * 95}ms`);
+    coin.style.left = `${from.left + from.width / 2}px`;
+    coin.style.top = `${from.top + from.height / 2}px`;
+    document.body.appendChild(coin);
+    coin.addEventListener("animationend", () => coin.remove(), { once: true });
   }
+  state.pendingCoinGain = 0;
+}
+
+function playPendingPurseLossAnimation() {
+  if (!state.pendingPurseLoss) return;
+  const rewardPanel = $("reward-panel");
+  const purse = document.querySelector(".stat-purse .purse-visual") || document.querySelector(".stat-purse");
+  if (!rewardPanel || rewardPanel.hidden || !purse) return;
+
+  const from = purse.getBoundingClientRect();
+  const to = rewardPanel.getBoundingClientRect();
+  if (!from.width || !to.width) return;
+
+  const lostPurse = document.createElement("span");
+  lostPurse.className = "flying-purse";
+  const purseX = to.left + to.width / 2 - (from.left + from.width / 2);
+  const purseY = to.top + to.height / 2 - (from.top + from.height / 2);
+  lostPurse.style.setProperty("--purse-x", `${purseX}px`);
+  lostPurse.style.setProperty("--purse-y", `${purseY}px`);
+  lostPurse.style.setProperty("--purse-mid-x", `${purseX * 0.76}px`);
+  lostPurse.style.setProperty("--purse-mid-y", `${purseY * 0.76}px`);
+  lostPurse.style.left = `${from.left + from.width / 2}px`;
+  lostPurse.style.top = `${from.top + from.height / 2}px`;
+  document.body.appendChild(lostPurse);
+  lostPurse.addEventListener("animationend", () => lostPurse.remove(), { once: true });
+  state.pendingPurseLoss = false;
 }
 
 function renderHearts() {
   const heartRow = $("heart-row");
+  const previousLife = state.renderedLife;
   heartRow.textContent = "";
   for (let index = 0; index < state.maxLife; index += 1) {
     const heart = document.createElement("span");
     heart.className = `heart-icon${index < state.life ? " is-full" : ""}`;
+    if (previousLife !== null) {
+      if (index >= state.life && index < previousLife) heart.classList.add("is-lost");
+      if (index < state.life && index >= previousLife) heart.classList.add("is-gained");
+    }
     heartRow.appendChild(heart);
   }
+  state.renderedLife = state.life;
 }
 
 function renderPurse() {
@@ -1337,10 +1516,10 @@ function renderHodor() {
   if (!hodor) return;
 
   const pose = hodorPoseForScreen();
-  const asset = hodorAssetForInventoryAssets(pose);
+  const assets = hodorLayerUrlsForInventory(pose);
   hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
   hodor.classList.add(`pose-${pose}`);
-  hodor.style.backgroundImage = `url("${asset}")`;
+  hodor.style.backgroundImage = assets.map(cssAssetUrl).join(", ");
 }
 
 function hodorPoseForScreen() {
@@ -1352,58 +1531,59 @@ function hodorPoseForScreen() {
   return state.hodorPose || "idle";
 }
 
-function hodorAssetForInventory(pose) {
-  const owned = new Set(state.inventory);
-  const hasCasque = owned.has("Casque Trop Petit");
-  const hasBotte = owned.has("Sandales de Panique");
-  const hasHache = owned.has("Hache Emoussee");
-  const hasMedaille = owned.has("Medaillon du Presque-Heros");
-
-  if (!hasCasque && !hasBotte && !hasHache && !hasMedaille) {
-    const cleanPose = {
-      idle: "idle",
-      walk: "marche",
-      releve: "ko",
-      victory: "victoire",
-      hurt: "degats",
-      combat: "attaque-1",
-      "combat-2": "attaque-2",
-      "combat-3": "attaque-3",
-      dead: "mort"
-    }[pose] || "idle";
-    return `assets/Hodor/0-item/${cleanPose}.png`;
-  }
-
-  let stem = "hodor";
-  if (hasCasque && hasBotte && hasHache && hasMedaille) stem = "Hodor-Casque-Médaille-Hache-Botte";
-  else if (hasCasque && hasBotte && hasHache) stem = "Hodor-casque-botte-hache";
-  else if (hasCasque && hasBotte && hasMedaille) stem = "Hodor-Casque-Botte-Médaille";
-  else if (hasHache && hasBotte && hasMedaille) stem = "Hodor-Hache-Botte-Médaille";
-  else if (hasCasque && hasHache) stem = "Hodor-Casque-Hache";
-  else if (hasCasque && hasBotte) stem = "Hodor-Casque-Botte";
-  else if (hasCasque && hasMedaille) stem = "Hodor-Casque-Médail";
-  else if (hasBotte && hasHache) stem = "Hodor-Botte-Hache";
-  else if (hasBotte && hasMedaille) stem = "Hodor-Botte-Médaille";
-  else if (hasHache && hasMedaille) stem = "Hodor-Hache-Médaille";
-  else if (hasCasque) stem = "Hodor-Casque";
-  else if (hasBotte) stem = "Hodor-Botte";
-  else if (hasHache) stem = "Hodor-Hache";
-  else if (hasMedaille) stem = "Hodor-Médail";
-  return `assets/Hodor/crops/${stem}-${pose}.png`;
+function cssAssetUrl(asset) {
+  return `url("${asset}")`;
 }
 
-function hodorAssetForInventoryClean(pose) {
+function hodorLayerUrlsForInventory(pose) {
   const owned = new Set(state.inventory);
   const hasCasque = owned.has("Casque Trop Petit");
-  const hasBotte = owned.has("Sandales de Panique");
   const hasHache = owned.has("Hache Emoussee");
-  const hasMedaille = owned.has("Medaillon du Presque-Heros");
-  const cleanPose = {
+  const hasSlip = owned.has("Slip de Guerre");
+  const hasMedaillon = owned.has("Medaillon du Presque-Heros");
+  const hasSandales = owned.has("Sandales de Panique");
+  const cleanPose = hodorV01PoseName(pose);
+  const basePath = "assets/Hodor V0.1";
+  const layers = [];
+  const headPoses = new Set(["idle", "marche", "fuite", "question", "degats", "attaque-1", "attaque-2", "attaque-3", "victoire"]);
+  const handPoses = new Set(["idle", "marche", "fuite", "question", "degats", "attaque-1", "attaque-3", "mort"]);
+
+  if (headPoses.has(cleanPose)) {
+    layers.push(`${basePath}/Morceau/${cleanPose}-tete.png`);
+  }
+
+  if (hasCasque) {
+    layers.push(`${basePath}/Stuff/Casque/${cleanPose}-casque.png`);
+  }
+
+  if (hasHache) {
+    if (handPoses.has(cleanPose)) layers.push(`${basePath}/Morceau/${cleanPose}-main.png`);
+    layers.push(`${basePath}/Stuff/Hache/${cleanPose}-hache.png`);
+  }
+
+  if (hasMedaillon) {
+    layers.push(`${basePath}/Stuff/Medaillon du Presque-Heros/${cleanPose}-medaillon.png`);
+  }
+
+  if (hasSlip) {
+    layers.push(`${basePath}/Stuff/Slip de guerre/${cleanPose}-slip-de-guerre.png`);
+  }
+
+  if (hasSandales) {
+    layers.push(`${basePath}/Stuff/Sandales de Panique/${cleanPose}-sandale.png`);
+  }
+
+  layers.push(`${basePath}/Corps/${cleanPose === "idle" ? "Idle" : cleanPose}.png`);
+  return layers;
+}
+
+function hodorV01PoseName(pose) {
+  return {
     idle: "idle",
     walk: "marche",
     fuite: "fuite",
     question: "question",
-    releve: "ko",
+    releve: "question",
     victory: "victoire",
     hurt: "degats",
     combat: "attaque-1",
@@ -1411,98 +1591,4 @@ function hodorAssetForInventoryClean(pose) {
     "combat-3": "attaque-3",
     dead: "mort"
   }[pose] || "idle";
-
-  if (!hasCasque && !hasBotte && !hasHache && !hasMedaille) {
-    return `assets/Hodor/0-item/${cleanPose}.png`;
-  }
-
-  const gear = [];
-  if (hasCasque) gear.push("Casque");
-  if (hasBotte) gear.push("Botte");
-  if (hasHache) gear.push("Hache");
-  if (hasMedaille) gear.push("Medaille");
-
-  const folderByGear = {
-    Botte: "1-item/Botte",
-    Casque: "1-item/Casque",
-    Hache: "1-item/Hache",
-    Medaille: "1-item/Médaille",
-    "Botte+Casque": "2-items/Botte Casque",
-    "Botte+Hache": "2-items/Botte Hache",
-    "Botte+Medaille": "2-items/Botte Médaille",
-    "Casque+Hache": "2-items/Casque Hache",
-    "Casque+Medaille": "2-items/Casque Médaille",
-    "Hache+Medaille": "2-items/Hache Médaille",
-    "Botte+Casque+Hache": "3-items/Casque Botte Hache",
-    "Botte+Casque+Medaille": "3-items/Casque Botte Médaille",
-    "Botte+Hache+Medaille": "3-items/Médaille Botte Hache",
-    "Botte+Casque+Hache+Medaille": "4-items/Casque Médaille Hache Botte"
-  };
-
-  const folder = folderByGear[gear.join("+")];
-  if (folder) {
-    return `assets/Hodor/${folder}/${cleanPose}.jpg`;
-  }
-
-  if (hasCasque && hasHache && hasMedaille) {
-    return `assets/Hodor/2-items/Casque Hache/${cleanPose}.jpg`;
-  }
-
-  return `assets/Hodor/0-item/${cleanPose}.png`;
-}
-
-function hodorAssetForInventoryAssets(pose) {
-  const owned = new Set(state.inventory);
-  const hasCasque = owned.has("Casque Trop Petit");
-  const hasBotte = owned.has("Sandales de Panique");
-  const hasHache = owned.has("Hache Emoussee");
-  const hasMedaille = owned.has("Medaillon du Presque-Heros");
-  const cleanPose = {
-    idle: "idle",
-    walk: "marche",
-    fuite: "fuite",
-    question: "question",
-    releve: "ko",
-    victory: "victoire",
-    hurt: "degats",
-    combat: "attaque-1",
-    "combat-2": "attaque-2",
-    "combat-3": "attaque-3",
-    dead: "mort"
-  }[pose] || "idle";
-
-  if (!hasCasque && !hasBotte && !hasHache && !hasMedaille) {
-    return `assets/Hodor/0-item/${cleanPose}.png`;
-  }
-
-  const gear = [];
-  if (hasBotte) gear.push("Botte");
-  if (hasCasque) gear.push("Casque");
-  if (hasHache) gear.push("Hache");
-  if (hasMedaille) gear.push("Medaille");
-
-  const assetByGear = {
-    Botte: { folder: "1-item/Botte", ext: "png" },
-    Casque: { folder: "1-item/Casque", ext: "jpg" },
-    Hache: { folder: "1-item/Hache", ext: "jpg" },
-    Medaille: { folder: "1-item/M\u00e9daille", ext: "jpg" },
-    "Botte+Casque": { folder: "2-items/Botte Casque", ext: "jpg" },
-    "Botte+Hache": { folder: "2-items/Botte Hache", ext: "jpg" },
-    "Botte+Medaille": { folder: "2-items/Botte M\u00e9daille", ext: "jpg" },
-    "Casque+Hache": { folder: "2-items/Casque Hache", ext: "jpg" },
-    "Casque+Medaille": { folder: "2-items/Casque M\u00e9daille", ext: "jpg" },
-    "Hache+Medaille": { folder: "2-items/Hache M\u00e9daille", ext: "jpg" },
-    "Botte+Casque+Hache": { folder: "3-items/Casque Botte Hache", ext: "jpg" },
-    "Botte+Casque+Medaille": { folder: "3-items/Casque Botte M\u00e9daille", ext: "jpg" },
-    "Botte+Hache+Medaille": { folder: "3-items/M\u00e9daille Botte Hache", ext: "jpg" },
-    "Casque+Hache+Medaille": { folder: "3-items/Casque Hache M\u00e9daille", ext: "png" },
-    "Botte+Casque+Hache+Medaille": { folder: "4-items/Casque M\u00e9daille Hache Botte", ext: "jpg" }
-  };
-
-  const asset = assetByGear[gear.join("+")];
-  if (!asset) {
-    return `assets/Hodor/0-item/${cleanPose}.png`;
-  }
-
-  return `assets/Hodor/${asset.folder}/${cleanPose}.${asset.ext}`;
 }
