@@ -217,14 +217,14 @@ const eventPool = [
   {
     weight: 4,
     run() {
-      shiftFloors(-1);
-      return "Tu trouves un escalier qui descend franchement trop vite. Hodor descend de 2 etages et perd un peu confiance en l'architecture.";
+      shiftFloors(-2);
+      return "Tu trouves un escalier qui descend franchement trop vite. Hodor perd un peu confiance en l'architecture. -2 etages.";
     },
   },
   {
     weight: 6,
     run() {
-      shiftFloors(3);
+      shiftFloors(2);
       return "Un monte-charge grincheux remonte de 2 etages. Le donjon appelle ca du service client.";
     },
   },
@@ -232,10 +232,10 @@ const eventPool = [
     weight: 3,
     run() {
       if (Math.random() < 0.42) {
-        shiftFloors(-1);
+        shiftFloors(-2);
         return "Une trappe s'ouvre sous tes pieds. Mauvaise nouvelle pour tes genoux, bonne nouvelle pour la descente : -2 etages.";
       }
-      shiftFloors(3);
+      shiftFloors(2);
       return "Une trappe s'ouvre sous tes pieds, mais un ressort idiot te renvoie plus haut. Tu remontes de 2 etages.";
     },
   },

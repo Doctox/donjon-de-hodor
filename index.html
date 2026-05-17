@@ -15,10 +15,6 @@
               <span>Banque</span>
               <strong><span id="bank-gold">0</span> PO</strong>
             </div>
-            <div class="bank-score loss-score" id="loss-score">
-              <span>Perdus</span>
-              <strong id="loss-count">0</strong>
-            </div>
           </div>
         </div>
         <div class="debug-menu">
@@ -60,23 +56,27 @@
       </section>
 
       <section class="stats-grid">
-        <article class="stat stat-place">
-          <span id="place-label">Etage</span>
-          <strong id="floor">20</strong>
-        </article>
-        <article class="stat stat-life">
-          <div class="heart-row" id="heart-row" aria-label="Vie"></div>
-        </article>
         <article class="stat stat-purse">
           <div class="purse-visual" id="purse-visual" aria-hidden="true"></div>
           <div>
             <strong><span id="carried-gold">0</span> PO</strong>
           </div>
         </article>
+        <article class="stat stat-life">
+          <div class="heart-row" id="heart-row" aria-label="Vie"></div>
+        </article>
         <article class="stat-inventory" aria-label="Inventaire">
           <button class="inventory-toggle" id="inventory-toggle" type="button" aria-expanded="false" aria-controls="inventory-popover">
             <span>Inventaire</span>
           </button>
+        </article>
+        <article class="stat stat-loss bank-score loss-score" id="loss-score">
+          <span>Essai</span>
+          <strong id="loss-count">0</strong>
+        </article>
+        <article class="stat stat-place">
+          <span id="place-label">Etage</span>
+          <strong id="floor">20</strong>
         </article>
       </section>
 

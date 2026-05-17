@@ -185,8 +185,13 @@ function setReward(text) {
 function hodorPoseFromStory(text, tone) {
   const content = normalizeText(text);
   const effectText = normalizeText(splitStoryReward(text).reward);
+  const hasEffectItem = Boolean(knownItemInText(effectText));
+  const itemWasLost = hasEffectItem && /perdu|perdue|pulverise|pulverisee|confisque|confisquee|se fend|se dechire|explose|reste sur place|partent ensuite|malediction|refuse la mort|annule la catastrophe/.test(content);
+  const itemWasDuplicate = hasEffectItem && /deja|dommage|ricane|refuse le cumul|personne ne devrait/.test(content);
   if (/\+\d+\s*po|banque\s*\+\d+\s*po/.test(effectText)) return "victory";
   if (/-\d+\s*po|bourse perdue/.test(effectText)) return "releve";
+  if (itemWasLost) return "ko";
+  if (itemWasDuplicate) return "question";
   if (/\+\d+\s*coeur|caillou affectif|hache emoussee|casque trop petit|sandales de panique|medaillon|chaussette|gants|slip|cape/.test(effectText)) return "victory";
   if (/-\d+\s*etages/.test(effectText)) return "fuite";
   if (/\+\d+\s*etages/.test(effectText)) return "walk";
@@ -777,11 +782,12 @@ function strikeLabel(strike) {
 }
 
 function descendFloor() {
-  state.floor -= 1;
   if (state.floorShift) {
     state.floor += state.floorShift;
     state.floor = Math.min(state.totalFloors, state.floor);
     state.floorShift = 0;
+  } else {
+    state.floor -= 1;
   }
   if (state.floor <= 0) {
     state.screen = "village";
@@ -794,7 +800,7 @@ function descendFloor() {
 }
 
 function shiftFloors(amount) {
-  state.floorShift += amount;
+  state.floorShift = amount;
 }
 
 function recordWin() {
@@ -829,11 +835,18 @@ function winTaunt() {
 }
 
 function villageShameText() {
-  if (state.runLosses >= 10) return "Dignite : portee disparue au combat";
-  if (state.runLosses >= 5) return "Dignite : fortement cabossee";
-  if (state.stats.wins >= 10) return "Reputation : presque credible";
-  if (state.bankGold >= 50) return "Banquier : legerement nerveux";
-  return "Dignite estimee : introuvable";
+  const wins = state.stats.wins || 0;
+  const losses = state.stats.losses || 0;
+  const balance = wins - losses;
+
+  if (wins === 0 && losses === 0) return "Dignite : pas encore mesuree";
+  if (balance >= 8) return "Dignite : legendaire";
+  if (balance >= 5) return "Dignite : formidable";
+  if (balance >= 2) return "Dignite : presque propre";
+  if (balance >= 0) return "Dignite : fragile mais presente";
+  if (balance >= -2) return "Dignite : cabossee";
+  if (balance >= -5) return "Dignite : merdique";
+  return "Dignite : portee disparue au combat";
 }
 
 function flashDoor(door) {
@@ -1517,7 +1530,7 @@ function renderHodor() {
 
   const pose = hodorPoseForScreen();
   const assets = hodorLayerUrlsForInventory(pose);
-  hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
+  hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-ko", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
   hodor.classList.add(`pose-${pose}`);
   hodor.style.backgroundImage = assets.map(cssAssetUrl).join(", ");
 }
@@ -1547,29 +1560,30 @@ function hodorLayerUrlsForInventory(pose) {
   const layers = [];
   const headPoses = new Set(["idle", "marche", "fuite", "question", "degats", "attaque-1", "attaque-2", "attaque-3", "victoire"]);
   const handPoses = new Set(["idle", "marche", "fuite", "question", "degats", "attaque-1", "attaque-3", "mort"]);
+  const supportsGearLayers = cleanPose !== "ko";
 
   if (headPoses.has(cleanPose)) {
     layers.push(`${basePath}/Morceau/${cleanPose}-tete.png`);
   }
 
-  if (hasCasque) {
+  if (supportsGearLayers && hasCasque) {
     layers.push(`${basePath}/Stuff/Casque/${cleanPose}-casque.png`);
   }
 
-  if (hasHache) {
+  if (supportsGearLayers && hasHache) {
     if (handPoses.has(cleanPose)) layers.push(`${basePath}/Morceau/${cleanPose}-main.png`);
     layers.push(`${basePath}/Stuff/Hache/${cleanPose}-hache.png`);
   }
 
-  if (hasMedaillon) {
+  if (supportsGearLayers && hasMedaillon) {
     layers.push(`${basePath}/Stuff/Medaillon du Presque-Heros/${cleanPose}-medaillon.png`);
   }
 
-  if (hasSlip) {
+  if (supportsGearLayers && hasSlip) {
     layers.push(`${basePath}/Stuff/Slip de guerre/${cleanPose}-slip-de-guerre.png`);
   }
 
-  if (hasSandales) {
+  if (supportsGearLayers && hasSandales) {
     layers.push(`${basePath}/Stuff/Sandales de Panique/${cleanPose}-sandale.png`);
   }
 
@@ -1586,6 +1600,7 @@ function hodorV01PoseName(pose) {
     releve: "question",
     victory: "victoire",
     hurt: "degats",
+    ko: "ko",
     combat: "attaque-1",
     "combat-2": "attaque-2",
     "combat-3": "attaque-3",

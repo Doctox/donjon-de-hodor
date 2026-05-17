@@ -49,16 +49,16 @@ button:disabled {
   min-height: 100dvh;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   padding: clamp(6px, 1.4dvh, 14px) 0;
 }
 
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: clamp(4px, 0.8dvh, 8px);
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 999;
+  margin: 0;
 }
 
 .score-strip {
@@ -105,22 +105,34 @@ button:disabled {
 }
 
 .loss-score {
-  position: fixed;
-  left: 14px;
-  top: clamp(340px, 56dvh, 560px);
-  bottom: auto;
-  z-index: 8;
-  opacity: 0.82;
-  transform: scale(0.92);
-  transform-origin: left top;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: clamp(56px, 8.5dvh, 88px);
+  border-color: rgba(216, 170, 61, 0.24);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(216, 170, 61, 0.08), transparent 64%),
+    rgba(21, 18, 13, 0.72);
+  padding: clamp(6px, 1dvh, 10px);
+  text-align: center;
 }
 
 .loss-score > span {
-  display: none;
+  display: block;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.92rem, 2.2dvh, 1.35rem);
+  line-height: 1;
+  text-transform: none;
 }
 
 #loss-count {
+  display: block;
+  margin: 0;
   color: var(--danger);
+  font-size: clamp(1.7rem, 4.8dvh, 3.2rem);
+  line-height: 0.95;
 }
 
 .debug-menu {
@@ -261,7 +273,8 @@ h1 {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) minmax(120px, 1fr) minmax(62px, 0.42fr) minmax(96px, 0.62fr);
+  grid-template-columns: minmax(140px, 1.15fr) minmax(150px, 1fr) minmax(82px, 0.62fr) minmax(110px, 0.74fr) minmax(130px, 0.86fr);
+  align-items: center;
   gap: clamp(6px, 1dvh, 10px);
   margin-bottom: clamp(6px, 1dvh, 10px);
 }
@@ -273,10 +286,11 @@ h1 {
   justify-items: start;
   min-width: 0;
   min-height: clamp(56px, 8.5dvh, 76px);
+  margin-left: clamp(-62px, -5vw, -24px);
 }
 
 .stat-place {
-  order: 4;
+  order: 5;
   min-width: 0;
   padding-inline: clamp(7px, 1dvh, 10px);
 }
@@ -291,6 +305,12 @@ h1 {
 
 .stat-life {
   order: 2;
+  justify-self: start;
+  margin-left: clamp(-28px, -2.6vw, -10px);
+}
+
+.stat-loss {
+  order: 4;
 }
 
 .stat {
@@ -327,9 +347,9 @@ h1 {
 
 .stat-life {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   align-content: center;
-  text-align: center;
+  text-align: left;
 }
 
 .stat-life strong {
@@ -339,7 +359,7 @@ h1 {
 .stat-purse {
   display: grid;
   grid-template-columns: minmax(42px, 60px) max-content;
-  gap: 6px;
+  gap: clamp(5px, 0.9dvh, 9px);
   align-items: center;
   justify-content: start;
 }
@@ -616,10 +636,11 @@ h1 {
 }
 
 .heart-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: start;
+  justify-items: start;
+  gap: 4px 7px;
   margin-top: 4px;
 }
 
@@ -742,6 +763,10 @@ h1 {
 
 .hodor-sprite.pose-hurt {
   animation: hodorHit 360ms ease;
+}
+
+.hodor-sprite.pose-ko {
+  animation: hodorHit 520ms ease both;
 }
 
 .hodor-sprite.pose-combat {
@@ -1757,11 +1782,12 @@ h1 {
 
 .village-stat-card small {
   display: block;
-  margin-top: 7px;
+  margin-top: 9px;
   color: #d8aa3d;
   font-family: Arial, sans-serif;
-  font-size: clamp(0.7rem, 1.15vw, 0.78rem);
-  line-height: 1.2;
+  font-size: clamp(0.78rem, 1.45vw, 0.96rem);
+  font-weight: 700;
+  line-height: 1.15;
 }
 
 .building {
@@ -1974,8 +2000,8 @@ h1 {
   }
 
   .topbar {
-    align-items: flex-start;
-    flex-direction: column;
+    right: 10px;
+    bottom: 10px;
   }
 
   .debug-panel {
@@ -1984,7 +2010,7 @@ h1 {
   }
 
   .stats-grid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(96px, 1.08fr) minmax(118px, 1fr) minmax(58px, 0.48fr) minmax(82px, 0.62fr) minmax(104px, 0.78fr);
   }
 
   .scene {
@@ -2056,12 +2082,12 @@ h1 {
   }
 
   .topbar {
-    align-items: center;
-    flex-direction: row;
+    right: 12px;
+    bottom: 12px;
   }
 
   .stats-grid {
-    grid-template-columns: minmax(110px, 1fr) minmax(120px, 1fr) minmax(62px, 0.42fr) minmax(112px, 0.72fr);
+    grid-template-columns: minmax(118px, 1.1fr) minmax(140px, 1fr) minmax(70px, 0.5fr) minmax(96px, 0.68fr) minmax(116px, 0.82fr);
   }
 
   .stat-inventory {
@@ -2069,7 +2095,7 @@ h1 {
   }
 
   .stat-place {
-    order: 4;
+    order: 5;
   }
 
   .stat-purse {
@@ -2078,6 +2104,10 @@ h1 {
 
   .stat-life {
     order: 2;
+  }
+
+  .stat-loss {
+    order: 4;
   }
 
   .scene.is-village {
@@ -2107,7 +2137,7 @@ h1 {
   }
 
   .heart-row {
-    gap: 4px;
+    gap: 3px 5px;
     margin-top: 0;
   }
 
@@ -2245,12 +2275,127 @@ h1 {
     overflow: visible;
   }
 
+  .stats-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(42px, 0.52fr) minmax(0, 0.68fr) minmax(0, 0.78fr);
+    gap: 4px;
+  }
+
+  .stat {
+    min-height: 52px;
+    padding: 6px 7px;
+  }
+
+  .stat-place strong {
+    font-size: clamp(1.05rem, 5.8vw, 1.45rem);
+  }
+
+  .loss-score > span {
+    font-size: clamp(0.78rem, 3.7vw, 1rem);
+  }
+
+  #loss-count {
+    font-size: clamp(1.45rem, 7.5vw, 2.2rem);
+  }
+
+  .heart-icon {
+    width: clamp(19px, 6vw, 27px);
+  }
+
+  .stat-life {
+    margin-left: clamp(-16px, -3vw, -8px);
+  }
+
+  .inventory-toggle {
+    width: clamp(50px, 14vw, 64px);
+  }
+
+  .stat-inventory {
+    margin-left: clamp(-30px, -6vw, -14px);
+  }
+
+  .stat-purse {
+    grid-template-columns: clamp(34px, 10vw, 46px) max-content;
+    gap: 3px;
+  }
+
+  .purse-visual {
+    width: clamp(34px, 10vw, 46px);
+  }
+
+  .stat-purse > div strong {
+    font-size: clamp(1.2rem, 6vw, 1.65rem);
+  }
+
   .scene.is-village {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(92px, 18dvh) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 6px;
+    min-height: calc(100dvh - 160px);
+    padding: 7px;
+  }
+
+  .scene.is-village .story-panel {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 8px 10px;
+  }
+
+  .scene.is-village .reward-row {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    align-self: center;
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: clamp(112px, 34vw, 170px);
+  }
+
+  .scene.is-village .action-zone {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    align-self: stretch;
+    background: transparent;
   }
 
   .village-choices {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    height: 100%;
+    align-content: start;
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(78px, 13dvh, 112px);
+  }
+
+  .village-stat-card {
+    padding: 9px 10px;
+  }
+
+  .village-stat-card strong {
+    font-size: clamp(0.72rem, 3.25vw, 0.9rem);
+  }
+
+  .village-stat-card small {
+    font-size: clamp(0.62rem, 2.75vw, 0.74rem);
+  }
+
+  .building-bank-total {
+    right: 7px;
+    bottom: 7px;
+    padding: 5px 9px;
+    font-size: clamp(0.78rem, 3.5vw, 0.98rem);
   }
 
   .doors {
