@@ -56,23 +56,19 @@
       </section>
 
       <div class="account-menu">
-        <button class="account-toggle" id="account-toggle" type="button" aria-expanded="false">Compte</button>
-        <div class="account-panel" id="account-panel" hidden>
-          <p class="account-status" id="account-status">Sauvegarde locale</p>
-          <label class="account-field">
-            <span>Email</span>
-            <input id="auth-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
-          </label>
-          <label class="account-field">
-            <span>Mot de passe</span>
-            <input id="auth-password" type="password" autocomplete="current-password" placeholder="8 caracteres minimum">
-          </label>
-          <div class="account-actions">
-            <button id="auth-login" type="button">Connexion</button>
-            <button id="auth-signup" type="button">Creer compte</button>
-            <button id="auth-logout" type="button" hidden>Deconnexion</button>
+        <button class="account-toggle" id="account-toggle" type="button" aria-label="Parametres du compte" aria-expanded="false">&#9881;</button>
+        <div class="account-popover" id="account-popover" role="dialog" aria-label="Parametres du compte" hidden>
+          <div class="account-card">
+            <div class="account-card-head">
+              <div>
+                <strong>Parametres</strong>
+              </div>
+              <button class="inventory-close" id="account-close" type="button" aria-label="Fermer les parametres">x</button>
+            </div>
+            <p class="account-line" id="account-line">Connecte : Visiteur</p>
+            <button class="account-open-login" id="account-open-login" type="button">Se connecter</button>
+            <button class="account-open-login" id="account-settings-logout" type="button" hidden>Deconnexion</button>
           </div>
-          <small class="account-help" id="account-help">Compte joueur : sauvegarde cloud. Compte admin : menu debug.</small>
         </div>
       </div>
 
@@ -116,6 +112,27 @@
       </div>
 
       <section class="scene" id="scene">
+        <div class="account-panel" id="account-panel">
+          <div class="account-header">
+            <p class="account-status" id="account-status">Sauvegarde locale</p>
+            <button class="account-visitor" id="auth-visitor" type="button">Visiteur</button>
+          </div>
+          <label class="account-field">
+            <span>Email</span>
+            <input id="auth-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
+          </label>
+          <label class="account-field">
+            <span>Mot de passe</span>
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="8 caracteres minimum">
+          </label>
+          <div class="account-actions">
+            <button id="auth-login" type="button">Connexion</button>
+            <button id="auth-signup" type="button">Creer compte</button>
+            <button id="auth-logout" type="button" hidden>Deconnexion</button>
+          </div>
+          <small class="account-help" id="account-help">Compte joueur : sauvegarde cloud. Compte admin : menu debug.</small>
+        </div>
+
         <div class="ko-banner" id="ko-banner" hidden>
           <strong>Perdus</strong>
           <span id="ko-taunt">Hodor retourne aux geoles sans passer par la dignite.</span>

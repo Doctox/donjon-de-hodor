@@ -97,10 +97,14 @@ addClick("debug-go-village", debugGoVillage);
 addClick("debug-clear-stuff", debugClearStuff);
 addClick("inventory-toggle", toggleInventory);
 addClick("inventory-close", closeInventory);
-addClick("account-toggle", toggleAccountPanel);
+addClick("account-toggle", toggleAccountPopover);
+addClick("account-close", closeAccountPopover);
+addClick("account-open-login", openAccountPanel);
+addClick("account-settings-logout", signOutAccount);
 addClick("auth-login", signInAccount);
 addClick("auth-signup", signUpAccount);
 addClick("auth-logout", signOutAccount);
+addClick("auth-visitor", closeAccountPanel);
 
 document.querySelectorAll("[data-debug-combat]").forEach((button) => {
   button.addEventListener("click", () => debugStartCombat(button.dataset.debugCombat));
@@ -111,7 +115,10 @@ document.querySelectorAll("[data-debug-stuff]").forEach((button) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeInventory();
+  if (event.key === "Escape") {
+    closeInventory();
+    closeAccountPopover();
+  }
 });
 
 document.addEventListener("click", (event) => {
@@ -119,6 +126,13 @@ document.addEventListener("click", (event) => {
   if (!popover || popover.hidden) return;
   if (event.target.closest("#inventory-popover .inventory-card") || event.target.closest("#inventory-toggle")) return;
   closeInventory();
+});
+
+document.addEventListener("click", (event) => {
+  const popover = $("account-popover");
+  if (!popover || popover.hidden) return;
+  if (event.target.closest("#account-popover .account-card") || event.target.closest("#account-toggle")) return;
+  closeAccountPopover();
 });
 
 setupCloudAuth();
@@ -178,11 +192,58 @@ function saveStats() {
   queueCloudSave();
 }
 
-function toggleAccountPanel() {
+function toggleAccountPopover() {
+  const popover = $("account-popover");
+  if (!popover) return;
+  popover.hidden = !popover.hidden;
+  $("account-toggle")?.setAttribute("aria-expanded", String(!popover.hidden));
+}
+
+function closeAccountPopover() {
+  const popover = $("account-popover");
+  if (!popover) return;
+  popover.hidden = true;
+  $("account-toggle")?.setAttribute("aria-expanded", "false");
+}
+
+function openAccountPanel() {
   const panel = $("account-panel");
   if (!panel) return;
-  panel.hidden = !panel.hidden;
-  $("account-toggle")?.setAttribute("aria-expanded", String(!panel.hidden));
+  panel.hidden = false;
+  closeAccountPopover();
+  closeInventory();
+  render();
+}
+
+function closeAccountPanel() {
+  const panel = $("account-panel");
+  if (!panel) return;
+  const wasOpen = !panel.hidden;
+  panel.hidden = true;
+  if (wasOpen) render();
+}
+
+function isAccountPanelOpen() {
+  const panel = $("account-panel");
+  return Boolean(panel && !panel.hidden);
+}
+
+function authMessage(message) {
+  const text = String(message || "");
+  const lower = text.toLowerCase();
+  if (lower.includes("email not confirmed")) {
+    return "Email non confirme. Va cliquer sur le lien dans ta boite mail. Regarde aussi dans les spams : Hodor y range souvent les trucs importants.";
+  }
+  if (lower.includes("invalid login credentials")) {
+    return "Email ou mot de passe incorrect. Hodor a probablement tape avec son front. Si tu viens de creer le compte, fouille les spams pour confirmer l'email.";
+  }
+  if (lower.includes("password should be")) {
+    return "Mot de passe trop court. Mets au moins 8 caracteres.";
+  }
+  if (lower.includes("user already registered")) {
+    return "Ce compte existe deja. Essaie Connexion.";
+  }
+  return text || "Erreur inconnue. Le donjon nie toute responsabilite.";
 }
 
 function setAccountStatus(message, tone = "neutral") {
@@ -200,9 +261,16 @@ function setAccountHelp(message) {
 function updateAccountUi() {
   const connected = Boolean(cloudState.user);
   const email = cloudState.user?.email || "";
+  const accountName = cloudState.profile?.display_name || email || "Visiteur";
   $("auth-login")?.toggleAttribute("hidden", connected);
   $("auth-signup")?.toggleAttribute("hidden", connected);
+  $("auth-visitor")?.toggleAttribute("hidden", connected);
   $("auth-logout")?.toggleAttribute("hidden", !connected);
+  $("account-open-login")?.toggleAttribute("hidden", connected);
+  $("account-settings-logout")?.toggleAttribute("hidden", !connected);
+  if ($("account-line")) {
+    $("account-line").textContent = connected ? `Connecte : ${accountName}` : "Connecte : Visiteur";
+  }
   if (connected) {
     setAccountStatus(`Connecte : ${email}`, cloudState.profile?.role === "admin" ? "admin" : "good");
     setAccountHelp(cloudState.profile?.role === "admin"
@@ -236,7 +304,7 @@ async function setupCloudAuth() {
   const { data, error } = await supabaseClient.auth.getSession();
   if (error) {
     setAccountStatus("Compte indisponible", "bad");
-    setAccountHelp(error.message);
+    setAccountHelp(authMessage(error.message));
     return;
   }
 
@@ -262,6 +330,8 @@ async function applySession(session) {
   await loadCloudProfileAndSave();
   updateAccountUi();
   render();
+  closeAccountPanel();
+  closeAccountPopover();
 }
 
 function accountCredentials() {
@@ -269,6 +339,7 @@ function accountCredentials() {
   const password = $("auth-password")?.value;
   if (!email || !password) {
     setAccountStatus("Email et mot de passe requis", "bad");
+    setAccountHelp("Remplis les deux champs, ou clique sur Visiteur pour jouer sans cloud.");
     return null;
   }
   return { email, password };
@@ -285,7 +356,7 @@ async function signInAccount() {
   const { error } = await supabaseClient.auth.signInWithPassword(credentials);
   if (error) {
     setAccountStatus("Connexion refusee", "bad");
-    setAccountHelp(error.message);
+    setAccountHelp(authMessage(error.message));
   }
 }
 
@@ -308,12 +379,12 @@ async function signUpAccount() {
   });
   if (error) {
     setAccountStatus("Creation refusee", "bad");
-    setAccountHelp(error.message);
+    setAccountHelp(authMessage(error.message));
     return;
   }
   if (!data.session) {
     setAccountStatus("Compte cree", "good");
-    setAccountHelp("Verifie tes mails si Supabase demande une confirmation.");
+    setAccountHelp("Va confirmer ton email, puis reviens te connecter. Regarde les spams : le donjon adore planquer le courrier utile.");
   }
 }
 
@@ -324,8 +395,10 @@ async function signOutAccount() {
   cloudState.user = null;
   cloudState.profile = null;
   cloudState.loaded = false;
+  resetRunCarryover();
   updateAccountUi();
   render();
+  closeAccountPopover();
 }
 
 async function loadCloudProfileAndSave() {
@@ -340,18 +413,24 @@ async function loadCloudProfileAndSave() {
 
     if (profileError) {
       setAccountStatus("Profil indisponible", "bad");
-      setAccountHelp(profileError.message);
+      setAccountHelp(authMessage(profileError.message));
     }
 
     cloudState.profile = profile || { role: "player" };
 
     if (saveError) {
       setAccountStatus("Sauvegarde indisponible", "bad");
-      setAccountHelp(saveError.message);
+      setAccountHelp(authMessage(saveError.message));
       return;
     }
 
-    if (save && !shouldKeepLocalProgress(save)) {
+    const keepLocalProgress = save ? shouldKeepLocalProgress(save) : false;
+    const returningPlayer = save && !keepLocalProgress
+      ? hasPlayedProgress(save)
+      : hasPlayedProgress();
+    resetRunCarryover();
+
+    if (save && !keepLocalProgress) {
       state.bankGold = Number(save.bank_gold || 0);
       state.stats = {
         ...state.stats,
@@ -367,27 +446,68 @@ async function loadCloudProfileAndSave() {
       await saveCloudNow({ force: true });
     }
 
+    if (returningPlayer) {
+      sendReturningPlayerToVillage();
+    }
+
     cloudState.loaded = true;
   } catch (error) {
     setAccountStatus("Compte indisponible", "bad");
-    setAccountHelp(error?.message || "Supabase a refuse de parler au donjon.");
+    setAccountHelp(authMessage(error?.message) || "Supabase a refuse de parler au donjon.");
   } finally {
     cloudState.applying = false;
   }
 }
 
 function shouldKeepLocalProgress(save) {
-  const cloudTotal = Number(save.bank_gold || 0)
+  const cloudTotal = progressScore(save);
+  const localTotal = progressScore();
+  return cloudTotal === 0 && localTotal > 0;
+}
+
+function progressScore(save) {
+  if (save) {
+    return Number(save.bank_gold || 0)
     + Number(save.total_gold || 0)
     + Number(save.wins || 0)
     + Number(save.losses || 0)
     + Object.values(save.upgrades || {}).reduce((sum, level) => sum + Number(level || 0), 0);
-  const localTotal = Number(state.bankGold || 0)
+  }
+
+  return Number(state.bankGold || 0)
     + Number(state.stats.goldBankedTotal || 0)
     + Number(state.stats.wins || 0)
     + Number(state.stats.losses || 0)
     + Object.values(state.upgrades || {}).reduce((sum, level) => sum + Number(level || 0), 0);
-  return cloudTotal === 0 && localTotal > 0;
+}
+
+function hasPlayedProgress(save) {
+  return progressScore(save) > 0;
+}
+
+function sendReturningPlayerToVillage() {
+  resetRunCarryover();
+  state.screen = "village";
+  state.villageLocation = "Village";
+  state.showWinBanner = false;
+  state.runEnded = true;
+  state.combat = null;
+  state.inputLocked = false;
+  state.doorHints = [];
+  state.floor = 0;
+  state.life = state.maxLife;
+  state.hodorPose = "walk";
+  setStory("Hodor retrouve le village. Personne ne sait comment, mais tout le monde prefere ne pas poser la question.", "neutral");
+}
+
+function resetRunCarryover() {
+  state.carriedGold = 0;
+  state.inventory = [];
+  state.combat = null;
+  state.inputLocked = false;
+  state.doorHints = [];
+  state.pendingCoinGain = 0;
+  state.pendingPurseLoss = false;
 }
 
 function queueCloudSave() {
@@ -409,7 +529,7 @@ async function saveCloudNow(options = {}) {
   const { error } = await supabaseClient.from("player_saves").upsert(payload, { onConflict: "user_id" });
   if (error) {
     setAccountStatus("Sauvegarde cloud echouee", "bad");
-    setAccountHelp(error.message);
+    setAccountHelp(authMessage(error.message));
     return;
   }
   cloudState.loaded = true;
@@ -1511,6 +1631,7 @@ function hasItem(item) {
 }
 
 function toggleInventory() {
+  if (isAccountPanelOpen()) return;
   const popover = $("inventory-popover");
   const toggle = $("inventory-toggle");
   const shouldOpen = popover.hidden;
@@ -1613,14 +1734,19 @@ function render() {
   }
 
   const showsFloor = state.screen === "dungeon" || state.screen === "combat";
-  $("place-label").textContent = showsFloor ? "Etage" : "Lieu";
-  $("floor").textContent = state.screen === "village" || state.screen === "shop"
-    ? "Village"
-    : state.screen === "cell"
-      ? "Cellule"
-      : state.screen === "mort"
-        ? "Geoles"
-        : state.floor;
+  if (isAccountPanelOpen()) {
+    $("place-label").textContent = "Lieu";
+    $("floor").textContent = "Donjon";
+  } else {
+    $("place-label").textContent = showsFloor ? "Etage" : "Lieu";
+    $("floor").textContent = state.screen === "village" || state.screen === "shop"
+      ? "Village"
+      : state.screen === "cell"
+        ? "Cellule"
+        : state.screen === "mort"
+          ? "Geoles"
+          : state.floor;
+  }
   $("carried-gold").textContent = state.carriedGold;
   $("bank-gold").textContent = state.bankGold;
   $("bank-building-gold").textContent = state.bankGold;
