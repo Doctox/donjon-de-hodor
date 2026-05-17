@@ -55,6 +55,27 @@
         </div>
       </section>
 
+      <div class="account-menu">
+        <button class="account-toggle" id="account-toggle" type="button" aria-expanded="false">Compte</button>
+        <div class="account-panel" id="account-panel" hidden>
+          <p class="account-status" id="account-status">Sauvegarde locale</p>
+          <label class="account-field">
+            <span>Email</span>
+            <input id="auth-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
+          </label>
+          <label class="account-field">
+            <span>Mot de passe</span>
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="8 caracteres minimum">
+          </label>
+          <div class="account-actions">
+            <button id="auth-login" type="button">Connexion</button>
+            <button id="auth-signup" type="button">Creer compte</button>
+            <button id="auth-logout" type="button" hidden>Deconnexion</button>
+          </div>
+          <small class="account-help" id="account-help">Compte joueur : sauvegarde cloud. Compte admin : menu debug.</small>
+        </div>
+      </div>
+
       <section class="stats-grid">
         <article class="stat stat-purse">
           <div class="purse-visual" id="purse-visual" aria-hidden="true"></div>
@@ -212,6 +233,8 @@
     <script src="monsters.js"></script>
     <script src="events.js"></script>
     <script src="upgrades.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
   </body>
 </html>

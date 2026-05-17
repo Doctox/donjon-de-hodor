@@ -3,6 +3,23 @@ const START_LIFE = 3;
 const BANK_KEY = "barbare_portes_binouse_bank";
 const UPGRADES_KEY = "barbare_portes_binouse_upgrades";
 const STATS_KEY = "barbare_portes_binouse_stats";
+const SUPABASE_CONFIG = window.HODOR_SUPABASE || {};
+const SUPABASE_URL = SUPABASE_CONFIG.url || "";
+const SUPABASE_KEY = SUPABASE_CONFIG.publishableKey || SUPABASE_CONFIG.anonKey || "";
+const AUTH_REDIRECT_URL = window.location.protocol.startsWith("http")
+  ? `${window.location.origin}${window.location.pathname}`
+  : "https://doctox.github.io/donjon-de-hodor/";
+const supabaseClient = window.supabase && SUPABASE_URL && SUPABASE_KEY
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+
+const cloudState = {
+  user: null,
+  profile: null,
+  loaded: false,
+  applying: false,
+  saveTimer: null,
+};
 
 let fallbackBankGold = 0;
 let fallbackUpgrades = {};
@@ -80,6 +97,10 @@ addClick("debug-go-village", debugGoVillage);
 addClick("debug-clear-stuff", debugClearStuff);
 addClick("inventory-toggle", toggleInventory);
 addClick("inventory-close", closeInventory);
+addClick("account-toggle", toggleAccountPanel);
+addClick("auth-login", signInAccount);
+addClick("auth-signup", signUpAccount);
+addClick("auth-logout", signOutAccount);
 
 document.querySelectorAll("[data-debug-combat]").forEach((button) => {
   button.addEventListener("click", () => debugStartCombat(button.dataset.debugCombat));
@@ -100,6 +121,7 @@ document.addEventListener("click", (event) => {
   closeInventory();
 });
 
+setupCloudAuth();
 render();
 
 function loadBankGold() {
@@ -117,6 +139,7 @@ function saveBankGold(value) {
   } catch {
     // La sauvegarde locale peut etre indisponible.
   }
+  queueCloudSave();
 }
 
 function loadUpgrades() {
@@ -134,6 +157,7 @@ function saveUpgrades() {
   } catch {
     // La sauvegarde locale peut etre indisponible.
   }
+  queueCloudSave();
 }
 
 function loadStats() {
@@ -151,6 +175,245 @@ function saveStats() {
   } catch {
     // La sauvegarde locale peut etre indisponible.
   }
+  queueCloudSave();
+}
+
+function toggleAccountPanel() {
+  const panel = $("account-panel");
+  if (!panel) return;
+  panel.hidden = !panel.hidden;
+  $("account-toggle")?.setAttribute("aria-expanded", String(!panel.hidden));
+}
+
+function setAccountStatus(message, tone = "neutral") {
+  const status = $("account-status");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.tone = tone;
+}
+
+function setAccountHelp(message) {
+  const help = $("account-help");
+  if (help) help.textContent = message;
+}
+
+function updateAccountUi() {
+  const connected = Boolean(cloudState.user);
+  const email = cloudState.user?.email || "";
+  $("auth-login")?.toggleAttribute("hidden", connected);
+  $("auth-signup")?.toggleAttribute("hidden", connected);
+  $("auth-logout")?.toggleAttribute("hidden", !connected);
+  if (connected) {
+    setAccountStatus(`Connecte : ${email}`, cloudState.profile?.role === "admin" ? "admin" : "good");
+    setAccountHelp(cloudState.profile?.role === "admin"
+      ? "Compte admin : sauvegarde cloud + menu debug."
+      : "Compte joueur : sauvegarde cloud active.");
+  } else if (supabaseClient) {
+    setAccountStatus("Non connecte", "neutral");
+    setAccountHelp("Connecte-toi pour retrouver banque, ameliorations et statistiques.");
+  } else {
+    setAccountStatus("Sauvegarde locale", "neutral");
+    setAccountHelp("Supabase n'est pas disponible, le jeu reste en sauvegarde locale.");
+  }
+  updateDebugAccess();
+}
+
+function updateDebugAccess() {
+  const debugMenu = document.querySelector(".debug-menu");
+  const isAdmin = cloudState.profile?.role === "admin";
+  if (!debugMenu) return;
+  debugMenu.hidden = !isAdmin;
+  if (!isAdmin) {
+    $("debug-panel").hidden = true;
+    $("debug-toggle").setAttribute("aria-expanded", "false");
+  }
+}
+
+async function setupCloudAuth() {
+  updateAccountUi();
+  if (!supabaseClient) return;
+
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    setAccountStatus("Compte indisponible", "bad");
+    setAccountHelp(error.message);
+    return;
+  }
+
+  if (data.session?.user) {
+    await applySession(data.session);
+  }
+
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    applySession(session);
+  });
+}
+
+async function applySession(session) {
+  cloudState.user = session?.user || null;
+  cloudState.profile = null;
+  cloudState.loaded = false;
+  if (!cloudState.user) {
+    updateAccountUi();
+    return;
+  }
+
+  setAccountStatus("Chargement du compte...", "neutral");
+  await loadCloudProfileAndSave();
+  updateAccountUi();
+  render();
+}
+
+function accountCredentials() {
+  const email = $("auth-email")?.value.trim();
+  const password = $("auth-password")?.value;
+  if (!email || !password) {
+    setAccountStatus("Email et mot de passe requis", "bad");
+    return null;
+  }
+  return { email, password };
+}
+
+async function signInAccount() {
+  if (!supabaseClient) {
+    setAccountStatus("Supabase non configure", "bad");
+    return;
+  }
+  const credentials = accountCredentials();
+  if (!credentials) return;
+  setAccountStatus("Connexion...", "neutral");
+  const { error } = await supabaseClient.auth.signInWithPassword(credentials);
+  if (error) {
+    setAccountStatus("Connexion refusee", "bad");
+    setAccountHelp(error.message);
+  }
+}
+
+async function signUpAccount() {
+  if (!supabaseClient) {
+    setAccountStatus("Supabase non configure", "bad");
+    return;
+  }
+  const credentials = accountCredentials();
+  if (!credentials) return;
+  setAccountStatus("Creation du compte...", "neutral");
+  const { data, error } = await supabaseClient.auth.signUp({
+    ...credentials,
+    options: {
+      emailRedirectTo: AUTH_REDIRECT_URL,
+      data: {
+        display_name: credentials.email.split("@")[0],
+      },
+    },
+  });
+  if (error) {
+    setAccountStatus("Creation refusee", "bad");
+    setAccountHelp(error.message);
+    return;
+  }
+  if (!data.session) {
+    setAccountStatus("Compte cree", "good");
+    setAccountHelp("Verifie tes mails si Supabase demande une confirmation.");
+  }
+}
+
+async function signOutAccount() {
+  if (!supabaseClient) return;
+  setAccountStatus("Deconnexion...", "neutral");
+  await supabaseClient.auth.signOut();
+  cloudState.user = null;
+  cloudState.profile = null;
+  cloudState.loaded = false;
+  updateAccountUi();
+  render();
+}
+
+async function loadCloudProfileAndSave() {
+  if (!supabaseClient || !cloudState.user) return;
+  cloudState.applying = true;
+
+  try {
+    const [{ data: profile, error: profileError }, { data: save, error: saveError }] = await Promise.all([
+      supabaseClient.from("profiles").select("role, display_name").eq("user_id", cloudState.user.id).maybeSingle(),
+      supabaseClient.from("player_saves").select("bank_gold,total_gold,wins,losses,upgrades").eq("user_id", cloudState.user.id).maybeSingle(),
+    ]);
+
+    if (profileError) {
+      setAccountStatus("Profil indisponible", "bad");
+      setAccountHelp(profileError.message);
+    }
+
+    cloudState.profile = profile || { role: "player" };
+
+    if (saveError) {
+      setAccountStatus("Sauvegarde indisponible", "bad");
+      setAccountHelp(saveError.message);
+      return;
+    }
+
+    if (save && !shouldKeepLocalProgress(save)) {
+      state.bankGold = Number(save.bank_gold || 0);
+      state.stats = {
+        ...state.stats,
+        wins: Number(save.wins || 0),
+        losses: Number(save.losses || 0),
+        goldBankedTotal: Number(save.total_gold || 0),
+      };
+      state.upgrades = { ...(save.upgrades || {}) };
+      saveBankGold(state.bankGold);
+      saveStats();
+      saveUpgrades();
+    } else {
+      await saveCloudNow({ force: true });
+    }
+
+    cloudState.loaded = true;
+  } catch (error) {
+    setAccountStatus("Compte indisponible", "bad");
+    setAccountHelp(error?.message || "Supabase a refuse de parler au donjon.");
+  } finally {
+    cloudState.applying = false;
+  }
+}
+
+function shouldKeepLocalProgress(save) {
+  const cloudTotal = Number(save.bank_gold || 0)
+    + Number(save.total_gold || 0)
+    + Number(save.wins || 0)
+    + Number(save.losses || 0)
+    + Object.values(save.upgrades || {}).reduce((sum, level) => sum + Number(level || 0), 0);
+  const localTotal = Number(state.bankGold || 0)
+    + Number(state.stats.goldBankedTotal || 0)
+    + Number(state.stats.wins || 0)
+    + Number(state.stats.losses || 0)
+    + Object.values(state.upgrades || {}).reduce((sum, level) => sum + Number(level || 0), 0);
+  return cloudTotal === 0 && localTotal > 0;
+}
+
+function queueCloudSave() {
+  if (!supabaseClient || !cloudState.user || cloudState.applying) return;
+  window.clearTimeout(cloudState.saveTimer);
+  cloudState.saveTimer = window.setTimeout(saveCloudNow, 500);
+}
+
+async function saveCloudNow(options = {}) {
+  if (!supabaseClient || !cloudState.user || (cloudState.applying && !options.force)) return;
+  const payload = {
+    user_id: cloudState.user.id,
+    bank_gold: Math.max(0, Math.floor(Number(state.bankGold || 0))),
+    total_gold: Math.max(0, Math.floor(Number(state.stats.goldBankedTotal || 0))),
+    wins: Math.max(0, Math.floor(Number(state.stats.wins || 0))),
+    losses: Math.max(0, Math.floor(Number(state.stats.losses || 0))),
+    upgrades: state.upgrades || {},
+  };
+  const { error } = await supabaseClient.from("player_saves").upsert(payload, { onConflict: "user_id" });
+  if (error) {
+    setAccountStatus("Sauvegarde cloud echouee", "bad");
+    setAccountHelp(error.message);
+    return;
+  }
+  cloudState.loaded = true;
+  updateAccountUi();
 }
 
 function setStory(text, tone = "neutral") {

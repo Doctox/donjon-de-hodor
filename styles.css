@@ -142,6 +142,128 @@ button:disabled {
   z-index: 999;
 }
 
+.account-menu {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 999;
+}
+
+.account-toggle {
+  min-height: 34px;
+  border: 1px solid rgba(216, 170, 61, 0.28);
+  border-radius: 999px;
+  background: rgba(32, 26, 19, 0.88);
+  color: var(--muted);
+  padding: 8px 12px;
+  font-family: Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.account-toggle:hover,
+.account-toggle[aria-expanded="true"] {
+  color: var(--ink);
+  background: rgba(58, 48, 34, 0.96);
+}
+
+.account-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: min(300px, calc(100vw - 28px));
+  border: 1px solid rgba(216, 170, 61, 0.28);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(37, 32, 22, 0.98), rgba(20, 17, 12, 0.98)),
+    #201a13;
+  padding: 12px;
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.44);
+}
+
+.account-panel[hidden] {
+  display: none;
+}
+
+.account-status {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.account-status[data-tone="good"],
+.account-status[data-tone="admin"] {
+  color: #d8f0d5;
+}
+
+.account-status[data-tone="bad"] {
+  color: #ffb4a8;
+}
+
+.account-status[data-tone="admin"]::after {
+  content: " admin";
+  color: var(--gold);
+  font-size: 0.78em;
+  text-transform: uppercase;
+}
+
+.account-field {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.account-field input {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #15120e;
+  color: var(--ink);
+  padding: 8px 10px;
+  font: inherit;
+  text-transform: none;
+}
+
+.account-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.account-actions button {
+  min-height: 36px;
+  border-radius: 7px;
+  background: #4a241f;
+  padding: 8px 10px;
+  font-family: Arial, sans-serif;
+  font-size: 0.86rem;
+}
+
+.account-actions button:hover {
+  background: #633129;
+}
+
+#auth-logout {
+  grid-column: 1 / -1;
+  background: #2d271d;
+}
+
+.account-help {
+  display: block;
+  margin-top: 9px;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
 .debug-panel {
   position: absolute;
   z-index: 1000;
@@ -168,6 +290,10 @@ button:disabled {
 
 .debug-panel button:hover {
   background: #633129;
+}
+
+.debug-menu[hidden] {
+  display: none;
 }
 
 .debug-section {
