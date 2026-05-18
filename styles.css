@@ -4319,3 +4319,38 @@ h1 {
     top: 55%;
   }
 }
+
+/* Small UI requests: image-only notice board and floating settings bubble. */
+.account-menu {
+  left: clamp(8px, 1.4vw, 14px);
+  top: clamp(8px, 1.4dvh, 14px);
+  z-index: 1100;
+}
+
+.account-toggle {
+  width: clamp(40px, 6dvh, 48px);
+  height: clamp(40px, 6dvh, 48px);
+  min-height: clamp(40px, 6dvh, 48px);
+  border-color: rgba(216, 170, 61, 0.42);
+  background:
+    radial-gradient(circle at 36% 30%, rgba(244, 234, 214, 0.2), transparent 34%),
+    rgba(23, 19, 13, 0.94);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38);
+}
+
+.account-popover {
+  place-items: start start;
+  padding: clamp(58px, 8dvh, 70px) 12px 12px;
+}
+
+.scene.is-village .notice-building .village-stat-title,
+.scene.is-village .notice-building strong,
+.scene.is-village .notice-building small {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .account-popover {
+    padding-top: 54px;
+  }
+}
