@@ -1015,8 +1015,9 @@ h1 {
 .inventory-card {
   width: clamp(300px, 28vw, 390px);
   max-width: calc(100vw - 24px);
-  max-height: min(560px, calc(100dvh - 120px));
-  overflow: visible;
+  max-height: min(760px, calc(100dvh - 120px));
+  overflow: auto;
+  scrollbar-gutter: stable;
   border: 1px solid rgba(216, 170, 61, 0.36);
   border-radius: 10px;
   background:
@@ -1116,6 +1117,7 @@ h1 {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 9px;
+  padding-bottom: 2px;
   font-family: Arial, sans-serif;
 }
 
@@ -4974,9 +4976,21 @@ h1 {
   --dungeon-hodor-y: 79%;
 }
 
+.scene.is-dungeon:not(.is-combat).is-effect-pose,
+.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover),
+.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) {
+  --dungeon-hodor-x: 51.5%;
+  --dungeon-hodor-y: calc(24.5% - 40px);
+}
+
 .scene.is-dungeon:not(.is-combat):has(.door:hover) .hodor-sprite,
 .scene.is-dungeon:not(.is-combat):has(.door.chosen) .hodor-sprite {
   filter: drop-shadow(0 28px 22px rgba(0, 0, 0, 0.5)) brightness(1.04);
+}
+
+.scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite {
+  animation: none !important;
+  filter: drop-shadow(0 28px 22px rgba(0, 0, 0, 0.5));
 }
 
 .scene.is-dungeon:not(.is-combat):has(.door[data-door="0"]:hover) .hodor-sprite,
@@ -5130,6 +5144,13 @@ h1 {
       linear-gradient(180deg, rgba(5, 4, 4, 0.08), rgba(5, 4, 4, 0.26)),
       url("assets/Donjon/Donjon-interieur.png") center calc(44% + 50px) / 92% 88% no-repeat,
       linear-gradient(180deg, #2f2b24, #12100e);
+  }
+
+  .scene.is-dungeon:not(.is-combat).is-effect-pose,
+  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover),
+  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) {
+    --dungeon-hodor-x: 51.5%;
+    --dungeon-hodor-y: calc(26% - 40px);
   }
 
   .scene.is-dungeon:not(.is-combat) .hodor-sprite {

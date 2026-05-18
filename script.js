@@ -1256,6 +1256,7 @@ function clearDungeonEffectPoseTimer() {
   if (!dungeonEffectPoseTimer) return;
   window.clearTimeout(dungeonEffectPoseTimer);
   dungeonEffectPoseTimer = null;
+  $("scene")?.classList.remove("is-effect-pose");
 }
 
 function holdDungeonEffectPoseBriefly() {
@@ -1263,8 +1264,10 @@ function holdDungeonEffectPoseBriefly() {
   if (state.screen !== "dungeon" || state.inputLocked) return;
 
   const effectPose = state.hodorPose || "question";
+  $("scene")?.classList.add("is-effect-pose");
   dungeonEffectPoseTimer = window.setTimeout(() => {
     dungeonEffectPoseTimer = null;
+    $("scene")?.classList.remove("is-effect-pose");
     if (state.screen !== "dungeon" || state.inputLocked || state.hodorPose !== effectPose) return;
     state.hodorPose = "question";
     renderHodor();
