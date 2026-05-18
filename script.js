@@ -12,6 +12,8 @@ const AUTH_REDIRECT_URL = window.location.protocol.startsWith("http")
 const supabaseClient = window.supabase && SUPABASE_URL && SUPABASE_KEY
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
+const LOGIN_ALIAS_PATTERN = /^[a-z0-9._-]{2,32}$/;
+const PASSWORD_SPECIAL_PATTERN = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/;
 
 const cloudState = {
   user: null,
@@ -67,6 +69,8 @@ const $ = (id) => {
 };
 
 const inventoryIconPaths = {
+  "Boulet au Pied": "assets/Hodor V0.1/Stuff/Boulet/inv-Boulet.png",
+  "Caillou Affectif": "assets/Hodor V0.1/Stuff/Cailloux/inv-cailloux.png",
   "Casque Trop Petit": "assets/Hodor V0.1/Stuff/Casque/inv-casque.png",
   "Hache Emoussee": "assets/Hodor V0.1/Stuff/Hache/inv-hache.png",
   "Medaillon du Presque-Heros": "assets/Hodor V0.1/Stuff/Medaillon du Presque-Heros/inv-medaillon.png",
@@ -98,6 +102,8 @@ const HODOR_WALK_FRAME_PATHS = [
 const HODOR_STUFF_LAYERS = [
   { item: "Slip de Guerre", folder: "Slip de guerre", suffix: "slip-de-guerre" },
   { item: "Sandales de Panique", folder: "Sandales de Panique", suffix: "sandale" },
+  { item: "Boulet au Pied", folder: "Boulet", suffix: "boulet" },
+  { item: "Caillou Affectif", folder: "Cailloux", suffix: "cailloux" },
   { item: "Medaillon du Presque-Heros", folder: "Medaillon du Presque-Heros", suffix: "medaillon" },
   { item: "Casque Trop Petit", folder: "Casque", suffix: "casque" },
   { item: "Hache Emoussee", folder: "Hache", suffix: "hache" },
@@ -120,6 +126,12 @@ const HODOR_WALK_STUFF_FRAME_PATHS = {
     `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-2.png`,
     `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-3.png`,
     `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-4.png`,
+  ],
+  "Boulet au Pied": [
+    `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-1.png`,
+    `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-2.png`,
+    `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-3.png`,
+    `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-4.png`,
   ],
 };
 let hodorWalkAnimationTimer = null;
@@ -159,7 +171,9 @@ addClick("account-close", closeAccountPopover);
 addClick("account-open-login", openAccountPanel);
 addClick("account-settings-logout", signOutAccount);
 addClick("auth-login", signInAccount);
-addClick("auth-signup", signUpAccount);
+addClick("auth-signup", openSignupPanel);
+addClick("auth-register", signUpAccount);
+addClick("auth-signup-close", closeSignupPanel);
 addClick("auth-logout", signOutAccount);
 addClick("auth-visitor", closeAccountPanel);
 
@@ -277,7 +291,24 @@ function closeAccountPanel() {
   if (!panel) return;
   const wasOpen = !panel.hidden;
   panel.hidden = true;
+  closeSignupPanel();
   if (wasOpen) render();
+}
+
+function openSignupPanel() {
+  const overlay = $("account-signup-overlay");
+  if (!overlay) return;
+  const loginId = $("auth-login-id")?.value.trim() || "";
+  if (loginId && !loginId.includes("@") && !$("signup-alias")?.value) {
+    $("signup-alias").value = normalizeLoginAlias(loginId);
+  }
+  overlay.hidden = false;
+  $("signup-alias")?.focus();
+}
+
+function closeSignupPanel() {
+  const overlay = $("account-signup-overlay");
+  if (overlay) overlay.hidden = true;
 }
 
 function isAccountPanelOpen() {
@@ -292,10 +323,13 @@ function authMessage(message) {
     return "Email non confirme. Va cliquer sur le lien dans ta boite mail. Regarde aussi dans les spams : Hodor y range souvent les trucs importants.";
   }
   if (lower.includes("invalid login credentials")) {
-    return "Email ou mot de passe incorrect. Hodor a probablement tape avec son front. Si tu viens de creer le compte, fouille les spams pour confirmer l'email.";
+    return "Pseudo, email ou mot de passe incorrect. Hodor a probablement tape avec son front. Si tu viens de creer le compte, fouille les spams pour confirmer l'email.";
   }
   if (lower.includes("password should be")) {
-    return "Mot de passe trop court. Mets au moins 8 caracteres.";
+    return passwordPolicyMessage();
+  }
+  if (lower.includes("weak password")) {
+    return passwordPolicyMessage();
   }
   if (lower.includes("user already registered")) {
     return "Ce compte existe deja. Essaie Connexion.";
@@ -329,13 +363,13 @@ function updateAccountUi() {
     $("account-line").textContent = connected ? `Connecte : ${accountName}` : "Connecte : Visiteur";
   }
   if (connected) {
-    setAccountStatus(`Connecte : ${email}`, cloudState.profile?.role === "admin" ? "admin" : "good");
+    setAccountStatus(`Connecte : ${accountName}`, cloudState.profile?.role === "admin" ? "admin" : "good");
     setAccountHelp(cloudState.profile?.role === "admin"
       ? "Compte admin : sauvegarde cloud + menu debug."
       : "Compte joueur : sauvegarde cloud active.");
   } else if (supabaseClient) {
     setAccountStatus("Non connecte", "neutral");
-    setAccountHelp("Connecte-toi pour retrouver banque, ameliorations et statistiques.");
+    setAccountHelp("Connecte-toi avec ton pseudo ou ton email pour retrouver banque, ameliorations et statistiques.");
   } else {
     setAccountStatus("Sauvegarde locale", "neutral");
     setAccountHelp("Supabase n'est pas disponible, le jeu reste en sauvegarde locale.");
@@ -391,15 +425,96 @@ async function applySession(session) {
   closeAccountPopover();
 }
 
-function accountCredentials() {
-  const email = $("auth-email")?.value.trim();
-  const password = $("auth-password")?.value;
-  if (!email || !password) {
-    setAccountStatus("Email et mot de passe requis", "bad");
-    setAccountHelp("Remplis les deux champs, ou clique sur Visiteur pour jouer sans cloud.");
+function normalizeLoginAlias(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function loginIdentifier() {
+  return $("auth-login-id")?.value.trim() || "";
+}
+
+function passwordValue(inputId = "auth-password") {
+  const password = $(inputId)?.value;
+  if (!password) {
+    setAccountStatus("Mot de passe requis", "bad");
+    setAccountHelp("Ajoute ton mot de passe, ou clique sur Visiteur pour jouer sans cloud.");
+    return "";
+  }
+  return password;
+}
+
+function passwordPolicyMessage() {
+  return "Choisis un mot de passe d'au moins 8 caracteres, avec des minuscules, des majuscules, un chiffre et un symbole.";
+}
+
+function validateNewPassword(password) {
+  return password.length >= 8
+    && /[a-z]/.test(password)
+    && /[A-Z]/.test(password)
+    && /\d/.test(password)
+    && PASSWORD_SPECIAL_PATTERN.test(password);
+}
+
+async function resolveLoginEmail(identifier, options = {}) {
+  const quiet = Boolean(options.quiet);
+  const loginId = String(identifier || "").trim();
+  if (!loginId) {
+    if (!quiet) {
+      setAccountStatus("Pseudo ou email requis", "bad");
+      setAccountHelp("Entre ton pseudo, ton email, ou clique sur Visiteur pour jouer sans cloud.");
+    }
+    return "";
+  }
+  if (loginId.includes("@")) {
+    return loginId.toLowerCase();
+  }
+
+  const alias = normalizeLoginAlias(loginId);
+  if (!LOGIN_ALIAS_PATTERN.test(alias)) {
+    if (!quiet) {
+      setAccountStatus("Pseudo invalide", "bad");
+      setAccountHelp("Utilise 2 a 32 caracteres : lettres, chiffres, point, tiret ou underscore.");
+    }
+    return "";
+  }
+
+  const { data, error } = await supabaseClient.rpc("resolve_login_alias", { p_alias: alias });
+  if (error || !data) {
+    if (!quiet) {
+      setAccountStatus("Pseudo introuvable", "bad");
+      setAccountHelp("Essaie ton email si ton compte a ete cree avant les pseudos.");
+    }
+    return "";
+  }
+
+  return String(data).trim().toLowerCase();
+}
+
+function signUpCredentials() {
+  const alias = normalizeLoginAlias($("signup-alias")?.value);
+  const email = $("signup-email")?.value.trim().toLowerCase();
+  const password = passwordValue("signup-password");
+  if (!alias || !email || !password) {
+    setAccountStatus("Pseudo, email et mot de passe requis", "bad");
+    setAccountHelp("Pour creer un compte, choisis un pseudo puis indique ton email.");
     return null;
   }
-  return { email, password };
+  if (!LOGIN_ALIAS_PATTERN.test(alias)) {
+    setAccountStatus("Pseudo invalide", "bad");
+    setAccountHelp("Utilise 2 a 32 caracteres : lettres, chiffres, point, tiret ou underscore.");
+    return null;
+  }
+  if (!email.includes("@")) {
+    setAccountStatus("Email invalide", "bad");
+    setAccountHelp("Supabase a besoin d'un vrai email pour creer le compte.");
+    return null;
+  }
+  if (!validateNewPassword(password)) {
+    setAccountStatus("Mot de passe trop faible", "bad");
+    setAccountHelp(passwordPolicyMessage());
+    return null;
+  }
+  return { alias, email, password };
 }
 
 async function signInAccount() {
@@ -407,10 +522,12 @@ async function signInAccount() {
     setAccountStatus("Supabase non configure", "bad");
     return;
   }
-  const credentials = accountCredentials();
-  if (!credentials) return;
+  const password = passwordValue();
+  if (!password) return;
   setAccountStatus("Connexion...", "neutral");
-  const { error } = await supabaseClient.auth.signInWithPassword(credentials);
+  const email = await resolveLoginEmail(loginIdentifier());
+  if (!email) return;
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
     setAccountStatus("Connexion refusee", "bad");
     setAccountHelp(authMessage(error.message));
@@ -422,15 +539,23 @@ async function signUpAccount() {
     setAccountStatus("Supabase non configure", "bad");
     return;
   }
-  const credentials = accountCredentials();
+  const credentials = signUpCredentials();
   if (!credentials) return;
   setAccountStatus("Creation du compte...", "neutral");
+  const existingEmail = await resolveLoginEmail(credentials.alias, { quiet: true });
+  if (existingEmail) {
+    setAccountStatus("Pseudo deja pris", "bad");
+    setAccountHelp("Choisis un autre pseudo pour ce nouveau compte.");
+    return;
+  }
   const { data, error } = await supabaseClient.auth.signUp({
-    ...credentials,
+    email: credentials.email,
+    password: credentials.password,
     options: {
       emailRedirectTo: AUTH_REDIRECT_URL,
       data: {
-        display_name: credentials.email.split("@")[0],
+        display_name: credentials.alias,
+        login_alias: credentials.alias,
       },
     },
   });
@@ -442,6 +567,7 @@ async function signUpAccount() {
   if (!data.session) {
     setAccountStatus("Compte cree", "good");
     setAccountHelp("Va confirmer ton email, puis reviens te connecter. Regarde les spams : le donjon adore planquer le courrier utile.");
+    closeSignupPanel();
   }
 }
 
@@ -2029,7 +2155,7 @@ function hodorPoseForScreen() {
   if (state.screen === "mort") return "dead";
   if (state.screen === "combat") return state.hodorPose === "combat-2" || state.hodorPose === "combat-3" ? state.hodorPose : "combat";
   if (state.screen === "shop") return "walk";
-  if (state.screen === "village") return state.showWinBanner ? "victory" : "walk";
+  if (state.screen === "village") return state.showWinBanner ? "victory" : "question";
   if (state.screen === "cell") return "idle";
   return state.hodorPose || "idle";
 }
@@ -2068,7 +2194,8 @@ function hodorStuffLayerUrl(layer, cleanPose, walkFrameIndex) {
     return walkFramePaths[walkFrameIndex];
   }
 
-  return `${HODOR_BASE_PATH}/Stuff/${layer.folder}/${cleanPose}-${layer.suffix}.png`;
+  const poseFile = layer.poseFiles && layer.poseFiles[cleanPose] ? layer.poseFiles[cleanPose] : `${cleanPose}-${layer.suffix}`;
+  return `${HODOR_BASE_PATH}/Stuff/${layer.folder}/${poseFile}.png`;
 }
 
 function hodorWalkFrameIndex() {

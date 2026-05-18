@@ -463,13 +463,16 @@ button:disabled {
 
 .account-field {
   display: grid;
-  gap: 5px;
   justify-items: stretch;
   color: var(--muted);
   font-family: Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.account-field:has(> span:first-child) {
+  gap: 5px;
 }
 
 .account-field input {
@@ -483,6 +486,64 @@ button:disabled {
   font: inherit;
   font-size: 1rem;
   text-transform: none;
+}
+
+.account-password-field {
+  position: relative;
+}
+
+.account-password-field input {
+  padding-right: 48px;
+}
+
+.account-info {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(216, 170, 61, 0.36);
+  border-radius: 50%;
+  background: rgba(216, 170, 61, 0.1);
+  color: var(--gold);
+  cursor: help;
+  font-family: Arial, sans-serif;
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: none;
+  transform: translateY(-50%);
+}
+
+.account-info::after {
+  content: attr(aria-label);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  z-index: 8;
+  width: min(250px, 70vw);
+  border: 1px solid rgba(216, 170, 61, 0.36);
+  border-radius: 8px;
+  background: #1f1a13;
+  color: var(--ink);
+  padding: 10px 12px;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.44);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.32;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.account-info:hover::after,
+.account-info:focus::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .account-actions {
@@ -518,6 +579,71 @@ button:disabled {
   font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.28;
+}
+
+.account-signup-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: none;
+  padding: clamp(14px, 3dvh, 26px);
+  background: rgba(6, 5, 4, 0.56);
+  backdrop-filter: blur(2px);
+}
+
+.account-signup-overlay[hidden] {
+  display: none;
+}
+
+.account-signup-modal {
+  display: grid;
+  gap: 11px;
+  width: min(390px, 100%);
+  border: 1px solid rgba(216, 170, 61, 0.34);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(42, 34, 24, 0.94), rgba(17, 14, 10, 0.95));
+  padding: 18px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72);
+}
+
+.account-signup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.account-register {
+  min-height: 50px;
+  border-radius: 9px;
+  background: rgba(74, 36, 31, 0.86);
+  padding: 10px 12px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.account-register:hover {
+  background: rgba(99, 49, 41, 0.94);
+}
+
+.account-signup-note {
+  display: block;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.28;
+  text-align: center;
 }
 
 .account-popover {
@@ -4402,6 +4528,7 @@ h1 {
   width: var(--village-hero-w);
   max-width: 28%;
   max-height: 36%;
+  background-image: url("assets/Hodor V0.1/Corps/question.png");
   transform: translate(-50%, -50%);
   transform-origin: center bottom;
   transition:
@@ -4478,7 +4605,36 @@ h1 {
 }
 
 .scene.is-village:has(.building:hover) .hodor-sprite {
+  background-image: url("assets/Hodor V0.1/Corps/Marche/marche-1.png");
+  animation: hodorVillageWalk 520ms steps(1, end) infinite;
   filter: drop-shadow(0 30px 24px rgba(0, 0, 0, 0.46)) brightness(1.04);
+}
+
+@keyframes hodorVillageWalk {
+  0% {
+    background-image: url("assets/Hodor V0.1/Corps/Marche/marche-1.png");
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  25% {
+    background-image: url("assets/Hodor V0.1/Corps/Marche/marche-2.png");
+    transform: translate(-50%, -50%) translateY(-3px);
+  }
+
+  50% {
+    background-image: url("assets/Hodor V0.1/Corps/Marche/marche-3.png");
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  75% {
+    background-image: url("assets/Hodor V0.1/Corps/Marche/marche-4.png");
+    transform: translate(-50%, -50%) translateY(-3px);
+  }
+
+  100% {
+    background-image: url("assets/Hodor V0.1/Corps/Marche/marche-1.png");
+    transform: translate(-50%, -50%) translateY(0);
+  }
 }
 
 @media (max-width: 900px) {

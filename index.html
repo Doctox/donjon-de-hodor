@@ -117,19 +117,41 @@
             <button class="account-visitor" id="auth-visitor" type="button">Visiteur</button>
           </div>
           <label class="account-field">
-            <span>Email</span>
-            <input id="auth-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
+            <input id="auth-login-id" type="text" autocomplete="username" placeholder="Pseudo ou mail" aria-label="Pseudo ou mail">
           </label>
-          <label class="account-field">
-            <span>Mot de passe</span>
-            <input id="auth-password" type="password" autocomplete="current-password" placeholder="8 caracteres minimum">
+          <label class="account-field account-password-field">
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="Mot de passe" aria-label="Mot de passe">
+            <span class="account-info" tabindex="0" aria-label="Utilisez au moins 8 caracteres, avec des minuscules, des majuscules, un chiffre et un symbole.">i</span>
           </label>
           <div class="account-actions">
             <button id="auth-login" type="button">Connexion</button>
-            <button id="auth-signup" type="button">Creer compte</button>
+            <button id="auth-signup" type="button">Creation de compte</button>
             <button id="auth-logout" type="button" hidden>Deconnexion</button>
           </div>
           <small class="account-help" id="account-help">Compte joueur : sauvegarde cloud. Compte admin : menu debug.</small>
+          <div class="account-signup-overlay" id="account-signup-overlay" hidden>
+            <div class="account-signup-modal" role="dialog" aria-label="Creation de compte">
+              <div class="account-signup-head">
+                <strong>Creation de compte</strong>
+                <button class="inventory-close" id="auth-signup-close" type="button" aria-label="Fermer la creation de compte">x</button>
+              </div>
+              <label class="account-field">
+                <span>Pseudo</span>
+                <input id="signup-alias" type="text" autocomplete="username" placeholder="doctox">
+              </label>
+              <label class="account-field">
+                <span>Mail</span>
+                <input id="signup-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
+              </label>
+              <label class="account-field account-password-field">
+                <span>Mot de passe</span>
+                <input id="signup-password" type="password" autocomplete="new-password" placeholder="8 caracteres minimum">
+                <span class="account-info" tabindex="0" aria-label="Utilisez au moins 8 caracteres, avec des minuscules, des majuscules, un chiffre et un symbole.">i</span>
+              </label>
+              <button class="account-register" id="auth-register" type="button">S'enregistrer</button>
+              <small class="account-signup-note">Apres l'inscription, verifie tes spams pour confirmer la creation du compte.</small>
+            </div>
+          </div>
         </div>
 
         <div class="ko-banner" id="ko-banner" hidden>
