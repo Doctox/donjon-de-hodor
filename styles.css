@@ -4749,6 +4749,27 @@ h1 {
 }
 
 @media (max-width: 560px) {
+  .inventory-item::after {
+    left: 50%;
+    top: calc(100% + 8px);
+    width: min(190px, calc(100vw - 72px));
+    max-width: calc(100% + 18px);
+    padding: 8px 9px;
+    font-size: 0.78rem;
+    line-height: 1.22;
+    transform: translate(-50%, 4px);
+  }
+
+  .inventory-item::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .inventory-item:hover::after,
+  .inventory-item:focus::after {
+    transform: translate(-50%, 0);
+  }
+
   .scene.is-village {
     --village-hero-w: clamp(118px, min(34vw, 22dvh), 178px);
     --village-bank-w: clamp(82px, 24vw, 118px);
@@ -5008,6 +5029,15 @@ h1 {
   animation: hodorPathDoorThree 1550ms cubic-bezier(0.22, 0.72, 0.24, 1) both;
 }
 
+.scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite,
+.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover) .hodor-sprite,
+.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) .hodor-sprite {
+  left: 51.5% !important;
+  top: calc(24.5% - 40px) !important;
+  animation: none !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 @keyframes hodorPathDoorOne {
   0% {
     left: 51.5%;
@@ -5151,6 +5181,13 @@ h1 {
   .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) {
     --dungeon-hodor-x: 51.5%;
     --dungeon-hodor-y: calc(26% - 40px);
+  }
+
+  .scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite,
+  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover) .hodor-sprite,
+  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) .hodor-sprite {
+    left: 51.5% !important;
+    top: calc(26% - 40px) !important;
   }
 
   .scene.is-dungeon:not(.is-combat) .hodor-sprite {

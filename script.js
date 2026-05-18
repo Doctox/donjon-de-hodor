@@ -1189,6 +1189,7 @@ function chooseDoor(door) {
 
   clearDungeonEffectPoseTimer();
   stopDungeonDoorWalkPreview();
+  door.blur();
   flashDoor(door);
   state.inputLocked = true;
   setStory("Hodor pose la main sur la poignee. Le donjon retient son souffle, probablement pour economiser l'air.");
@@ -1231,8 +1232,8 @@ function resolveDoorChoice() {
     setStory(finalDoorOutcome(), toneFromSnapshot(before));
     state.inputLocked = false;
     resetDoorEffects();
-    render();
     holdDungeonEffectPoseBriefly();
+    render();
     return;
   }
 
@@ -1248,8 +1249,8 @@ function resolveDoorChoice() {
   prepareDoorHints();
   state.inputLocked = false;
   resetDoorEffects();
-  render();
   holdDungeonEffectPoseBriefly();
+  render();
 }
 
 function clearDungeonEffectPoseTimer() {
@@ -1559,20 +1560,28 @@ function resetDoorEffects() {
   $("doors").classList.remove("resolving");
   document.querySelectorAll(".door").forEach((door) => {
     door.classList.remove("chosen");
+    door.blur();
   });
+  if (document.activeElement?.classList?.contains("door")) {
+    document.activeElement.blur();
+  }
 }
 
 function addGold(amount, text) {
-  let gained = amount;
+  const stickyGlovesBonus = hasItem("Gants Collants") && Math.random() < 0.35 ? 1 : 0;
+  const gained = amount + stickyGlovesBonus;
   let suffix = "";
 
-  if (hasItem("Gants Collants") && Math.random() < 0.35) {
-    gained += 1;
+  if (stickyGlovesBonus) {
     suffix = " Les gants collants ramassent 1 PO de plus, et probablement autre chose.";
   }
 
   state.carriedGold += gained;
-  return text.replace(`+${amount} PO`, `+${gained} PO`) + suffix;
+  return text + suffix;
+}
+
+function withoutPreventedDamageEffect(text) {
+  return cleanupStorySentence(String(text).replace(/-\d+\s*coeur(?:\s+bonus)?/gi, ""));
 }
 
 function takeDamage(amount, text) {
@@ -1585,11 +1594,12 @@ function takeDamage(amount, text) {
   }
 
   if (Math.random() < upgradeChance("reflexes", [0.16, 0.26, 0.38])) {
+    const dodgedText = withoutPreventedDamageEffect(text);
     if (state.inventory.length && Math.random() < 0.25) {
       const lost = removeRandomItem();
-      return `${text} Reflexes de Lache declenche une esquive, mais ${lost} reste sur place pour couvrir la retraite.`;
+      return `${dodgedText} Reflexes de Lache declenche une esquive, mais ${lost} reste sur place pour couvrir la retraite.`;
     }
-    return `${text} Reflexes de Lache declenche une esquive moche mais efficace.`;
+    return `${dodgedText} Reflexes de Lache declenche une esquive moche mais efficace.`;
   }
 
   if (hasItem("Cape Trop Longue") && Math.random() < 0.12) {
@@ -1604,12 +1614,12 @@ function takeDamage(amount, text) {
 
   if (hasItem("Sandales de Panique") && Math.random() < 0.16) {
     removeItem("Sandales de Panique");
-    return `${text} Mais tes sandales paniquent avant toi et t'evitent le pire. Elles partent ensuite vivre leur propre vie.`;
+    return `${withoutPreventedDamageEffect(text)} Mais tes sandales paniquent avant toi et t'evitent le pire. Elles partent ensuite vivre leur propre vie.`;
   }
 
   if (hasItem("Casque Trop Petit") && Math.random() < 0.22) {
     removeItem("Casque Trop Petit");
-    return `${text} Le casque trop petit bloque le coup, comprime une pensee inutile, puis se fend en deux.`;
+    return `${withoutPreventedDamageEffect(text)} Le casque trop petit bloque le coup, comprime une pensee inutile, puis se fend en deux.`;
   }
 
   state.life -= amount;
@@ -1617,7 +1627,7 @@ function takeDamage(amount, text) {
     if (hasItem("Medaillon du Presque-Heros")) {
       removeItem("Medaillon du Presque-Heros");
       state.life = 1;
-      return `${text} Medaillon du Presque-Heros explose et refuse la mort. Hodor ne comprend pas la procedure, mais il vit.`;
+      return `${withoutPreventedDamageEffect(text)} Medaillon du Presque-Heros explose et refuse la mort. Hodor ne comprend pas la procedure, mais il vit.`;
     }
     state.life = 0;
     endRun("mort");
