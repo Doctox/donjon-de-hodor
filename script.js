@@ -88,6 +88,13 @@ const HODOR_POSE_FILES = {
   ko: "ko",
   mort: "mort",
 };
+const HODOR_WALK_FRAME_MS = 170;
+const HODOR_WALK_FRAME_PATHS = [
+  `${HODOR_BASE_PATH}/Corps/Marche/marche-1.png`,
+  `${HODOR_BASE_PATH}/Corps/Marche/marche-2.png`,
+  `${HODOR_BASE_PATH}/Corps/Marche/marche-3.png`,
+  `${HODOR_BASE_PATH}/Corps/Marche/marche-4.png`,
+];
 const HODOR_STUFF_LAYERS = [
   { item: "Slip de Guerre", folder: "Slip de guerre", suffix: "slip-de-guerre" },
   { item: "Sandales de Panique", folder: "Sandales de Panique", suffix: "sandale" },
@@ -95,6 +102,27 @@ const HODOR_STUFF_LAYERS = [
   { item: "Casque Trop Petit", folder: "Casque", suffix: "casque" },
   { item: "Hache Emoussee", folder: "Hache", suffix: "hache" },
 ];
+const HODOR_WALK_STUFF_FRAME_PATHS = {
+  "Slip de Guerre": [
+    `${HODOR_BASE_PATH}/Stuff/Slip de guerre/Marche-Slip-de-guerre/marche-slip-de-guerre-1.png`,
+    `${HODOR_BASE_PATH}/Stuff/Slip de guerre/Marche-Slip-de-guerre/marche-slip-de-guerre-2.png`,
+    `${HODOR_BASE_PATH}/Stuff/Slip de guerre/Marche-Slip-de-guerre/marche-slip-de-guerre-3.png`,
+    `${HODOR_BASE_PATH}/Stuff/Slip de guerre/Marche-Slip-de-guerre/marche-slip-de-guerre-4.png`,
+  ],
+  "Sandales de Panique": [
+    `${HODOR_BASE_PATH}/Stuff/Sandales de Panique/Marche-sandale/marche-sandale-1.png`,
+    `${HODOR_BASE_PATH}/Stuff/Sandales de Panique/Marche-sandale/marche-sandale-2.png`,
+    `${HODOR_BASE_PATH}/Stuff/Sandales de Panique/Marche-sandale/marche-sandale-3.png`,
+    `${HODOR_BASE_PATH}/Stuff/Sandales de Panique/Marche-sandale/marche-sandale-4.png`,
+  ],
+  "Hache Emoussee": [
+    `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-1.png`,
+    `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-2.png`,
+    `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-3.png`,
+    `${HODOR_BASE_PATH}/Stuff/Hache/Marche-Hache/marche-hache-4.png`,
+  ],
+};
+let hodorWalkAnimationTimer = null;
 
 document.addEventListener("click", (event) => {
   const door = event.target.closest(".door");
@@ -1988,9 +2016,13 @@ function renderHodor() {
 
   const pose = hodorPoseForScreen();
   const assets = hodorLayerUrlsForInventory(pose);
-  hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-ko", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
-  hodor.classList.add(`pose-${pose}`);
+  const poseClass = `pose-${pose}`;
+  if (!hodor.classList.contains(poseClass)) {
+    hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-ko", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
+    hodor.classList.add(poseClass);
+  }
   hodor.style.backgroundImage = assets.map(cssAssetUrl).join(", ");
+  syncHodorWalkAnimation(pose);
 }
 
 function hodorPoseForScreen() {
@@ -2009,16 +2041,52 @@ function cssAssetUrl(asset) {
 function hodorLayerUrlsForInventory(pose) {
   const owned = new Set(state.inventory);
   const cleanPose = hodorV01PoseName(pose);
-  const poseFile = HODOR_POSE_FILES[cleanPose] || HODOR_POSE_FILES.idle;
-  const layersBottomToTop = [`${HODOR_BASE_PATH}/Corps/${poseFile}.png`];
+  const walkFrameIndex = cleanPose === "marche" ? hodorWalkFrameIndex() : 0;
+  const layersBottomToTop = [hodorBaseLayerUrl(cleanPose, walkFrameIndex)];
 
   HODOR_STUFF_LAYERS.forEach((layer) => {
     if (owned.has(layer.item)) {
-      layersBottomToTop.push(`${HODOR_BASE_PATH}/Stuff/${layer.folder}/${cleanPose}-${layer.suffix}.png`);
+      layersBottomToTop.push(hodorStuffLayerUrl(layer, cleanPose, walkFrameIndex));
     }
   });
 
   return layersBottomToTop.reverse();
+}
+
+function hodorBaseLayerUrl(cleanPose, walkFrameIndex) {
+  if (cleanPose === "marche") {
+    return HODOR_WALK_FRAME_PATHS[walkFrameIndex];
+  }
+
+  const poseFile = HODOR_POSE_FILES[cleanPose] || HODOR_POSE_FILES.idle;
+  return `${HODOR_BASE_PATH}/Corps/${poseFile}.png`;
+}
+
+function hodorStuffLayerUrl(layer, cleanPose, walkFrameIndex) {
+  const walkFramePaths = HODOR_WALK_STUFF_FRAME_PATHS[layer.item];
+  if (cleanPose === "marche" && walkFramePaths) {
+    return walkFramePaths[walkFrameIndex];
+  }
+
+  return `${HODOR_BASE_PATH}/Stuff/${layer.folder}/${cleanPose}-${layer.suffix}.png`;
+}
+
+function hodorWalkFrameIndex() {
+  return Math.floor(performance.now() / HODOR_WALK_FRAME_MS) % HODOR_WALK_FRAME_PATHS.length;
+}
+
+function syncHodorWalkAnimation(pose) {
+  if (pose === "walk") {
+    if (!hodorWalkAnimationTimer) {
+      hodorWalkAnimationTimer = setInterval(renderHodor, HODOR_WALK_FRAME_MS);
+    }
+    return;
+  }
+
+  if (hodorWalkAnimationTimer) {
+    clearInterval(hodorWalkAnimationTimer);
+    hodorWalkAnimationTimer = null;
+  }
 }
 
 function hodorV01PoseName(pose) {
