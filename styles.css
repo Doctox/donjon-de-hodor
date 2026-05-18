@@ -1,0 +1,4321 @@
+:root {
+  color-scheme: dark;
+  --bg: #181611;
+  --panel: #252016;
+  --panel-soft: #302719;
+  --ink: #f4ead6;
+  --muted: #b7a98f;
+  --gold: #d8aa3d;
+  --danger: #bf4c3b;
+  --good: #6fac72;
+  --stone: #6e6a60;
+  --wood: #6f4027;
+  --wood-dark: #3c2218;
+  --line: rgba(244, 234, 214, 0.16);
+}
+
+/* Village scene v2: stats live on the notice board, buildings stay clickable and readable. */
+.scene.is-village {
+  --village-hero-w: clamp(230px, min(25vw, 39dvh), 420px);
+  --village-bank-w: clamp(170px, min(20vw, 23dvh), 300px);
+  --village-shop-w: clamp(165px, min(19vw, 22dvh), 285px);
+  --village-tavern-w: clamp(185px, min(22vw, 24dvh), 330px);
+  --village-board-w: clamp(185px, min(21vw, 24dvh), 320px);
+}
+
+.scene.is-village .story-panel {
+  max-height: none;
+  min-height: 0;
+}
+
+.scene.is-village .story {
+  font-size: clamp(0.78rem, 1.6dvh, 1rem);
+  line-height: 1.18;
+}
+
+.scene.is-village .hodor-sprite {
+  left: clamp(40px, 8%, 120px);
+  top: clamp(82px, 16%, 155px);
+  width: var(--village-hero-w);
+  max-width: 38%;
+  max-height: 60%;
+}
+
+.scene.is-village .bank-building {
+  left: 44%;
+  top: 14%;
+  width: var(--village-bank-w);
+}
+
+.scene.is-village .tavern-building {
+  left: 68%;
+  top: 17%;
+  width: var(--village-tavern-w);
+}
+
+.scene.is-village .shop-building {
+  left: 45%;
+  top: 43%;
+  width: var(--village-shop-w);
+}
+
+.scene.is-village .notice-building {
+  left: 66%;
+  top: 43%;
+  width: var(--village-board-w);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  background-image: url("assets/Village/panneau-affichage.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.38));
+}
+
+.scene.is-village .notice-building .village-stat-title,
+.scene.is-village .notice-building strong,
+.scene.is-village .notice-building small {
+  width: 64%;
+  margin-left: 18%;
+  text-align: left;
+}
+
+.scene.is-village .notice-building .village-stat-title {
+  margin-top: 18%;
+  font-size: clamp(0.52rem, 0.78vw, 0.7rem);
+}
+
+.scene.is-village .notice-building strong {
+  font-size: clamp(0.67rem, 0.98vw, 0.9rem);
+  line-height: 1.08;
+}
+
+.scene.is-village .notice-building small {
+  font-size: clamp(0.58rem, 0.84vw, 0.78rem);
+  line-height: 1.1;
+}
+
+.scene.is-village .building-bank-total {
+  right: 5%;
+  bottom: 9%;
+}
+
+@media (max-width: 760px) {
+  .scene.is-village {
+    --village-hero-w: clamp(190px, 45vw, 280px);
+    --village-bank-w: clamp(118px, 31vw, 170px);
+    --village-shop-w: clamp(116px, 30vw, 165px);
+    --village-tavern-w: clamp(130px, 34vw, 185px);
+    --village-board-w: clamp(140px, 38vw, 205px);
+  }
+
+  .scene.is-village .story {
+    font-size: clamp(0.7rem, 2.35vw, 0.9rem);
+    line-height: 1.12;
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 27%;
+    top: 13%;
+    max-width: 54%;
+    max-height: 44%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 9%;
+    top: 48%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 55%;
+    top: 48%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 10%;
+    top: 66%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 53%;
+    top: 64%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title,
+  .scene.is-village .notice-building strong,
+  .scene.is-village .notice-building small {
+    width: 68%;
+    margin-left: 16%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title {
+    margin-top: 17%;
+    font-size: clamp(0.48rem, 1.8vw, 0.62rem);
+  }
+
+  .scene.is-village .notice-building strong {
+    font-size: clamp(0.58rem, 2.15vw, 0.76rem);
+  }
+
+  .scene.is-village .notice-building small {
+    font-size: clamp(0.52rem, 1.95vw, 0.68rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .scene.is-village {
+    --village-hero-w: clamp(165px, 44vw, 220px);
+    --village-bank-w: clamp(104px, 29vw, 138px);
+    --village-shop-w: clamp(102px, 28vw, 136px);
+    --village-tavern-w: clamp(112px, 31vw, 150px);
+    --village-board-w: clamp(126px, 36vw, 170px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 29%;
+    top: 14%;
+    max-height: 40%;
+  }
+
+  .scene.is-village .bank-building {
+    top: 50%;
+  }
+
+  .scene.is-village .tavern-building {
+    top: 50%;
+  }
+
+  .scene.is-village .shop-building {
+    top: 67%;
+  }
+
+  .scene.is-village .notice-building {
+    top: 66%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100dvh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(216, 170, 61, 0.12), transparent 30rem),
+    linear-gradient(135deg, #15130f, #201a13 58%, #11100d);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+button {
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.game-shell {
+  --hud-icon: clamp(46px, 7dvh, 72px);
+  --heart-size: clamp(24px, 3.7dvh, 34px);
+  --inventory-size: clamp(58px, 8dvh, 86px);
+  --hodor-size: clamp(330px, 49dvh, 660px);
+  --village-hodor-size: clamp(390px, 57dvh, 760px);
+  --dead-hodor-size: clamp(400px, 58dvh, 780px);
+  --door-height: clamp(150px, 24dvh, 285px);
+  --scene-pad: clamp(8px, 1.5dvh, 18px);
+  width: min(1180px, calc(100% - 28px));
+  margin: 0 auto;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: clamp(6px, 1.4dvh, 14px) 0;
+}
+
+.topbar {
+  position: fixed;
+  right: 14px;
+  bottom: clamp(70px, 8dvh, 104px);
+  z-index: 999;
+  margin: 0;
+}
+
+.score-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.bank-score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  border: 1px solid rgba(216, 170, 61, 0.32);
+  border-radius: 8px;
+  background: rgba(216, 170, 61, 0.1);
+  padding: 8px 12px;
+  font-family: Arial, sans-serif;
+}
+
+.bank-score > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.bank-score strong span {
+  color: inherit;
+  font-size: inherit;
+  text-transform: none;
+}
+
+.bank-score strong {
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+
+.bank-total[hidden] {
+  display: none;
+}
+
+.loss-score[hidden] {
+  display: none;
+}
+
+.loss-score {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: clamp(56px, 8.5dvh, 88px);
+  border-color: rgba(216, 170, 61, 0.24);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(216, 170, 61, 0.08), transparent 64%),
+    rgba(21, 18, 13, 0.72);
+  padding: clamp(6px, 1dvh, 10px);
+  text-align: center;
+}
+
+.loss-score > span {
+  display: block;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.92rem, 2.2dvh, 1.35rem);
+  line-height: 1;
+  text-transform: none;
+}
+
+#loss-count {
+  display: block;
+  margin: 0;
+  color: var(--danger);
+  font-size: clamp(1.7rem, 4.8dvh, 3.2rem);
+  line-height: 0.95;
+}
+
+.debug-menu {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 999;
+}
+
+.account-menu {
+  position: fixed;
+  left: 14px;
+  top: clamp(84px, 11dvh, 120px);
+  z-index: 1001;
+}
+
+.account-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(216, 170, 61, 0.28);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(244, 234, 214, 0.14), transparent 34%),
+    rgba(32, 26, 19, 0.88);
+  color: var(--muted);
+  padding: 0;
+  font-family: Arial, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.account-toggle:hover,
+.account-toggle[aria-expanded="true"] {
+  color: var(--ink);
+  background: rgba(58, 48, 34, 0.96);
+}
+
+.account-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: clamp(14px, 2dvh, 28px);
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(9, 10, 11, 0.08), rgba(9, 9, 8, 0.26)),
+    url("assets/Donjon/Donjon-accueil.png") center / cover no-repeat,
+    #201a13;
+  box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.account-panel::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(470px, calc(100% - 28px));
+  height: min(390px, calc(100% - 36px));
+  border: 1px solid rgba(216, 170, 61, 0.3);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(37, 32, 22, 0.56), rgba(20, 17, 12, 0.48));
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.62);
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(1px);
+}
+
+.account-panel[hidden] {
+  display: none;
+}
+
+.account-panel > * {
+  position: relative;
+  z-index: 1;
+  width: min(400px, calc(100% - 46px));
+  justify-self: center;
+}
+
+.account-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.account-status {
+  min-height: 58px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.account-visitor {
+  min-height: 58px;
+  border-radius: 8px;
+  background: rgba(74, 36, 31, 0.72);
+  color: var(--ink);
+  padding: 10px 14px;
+  font-family: Arial, sans-serif;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+}
+
+.account-visitor:hover {
+  background: rgba(99, 49, 41, 0.84);
+}
+
+.account-status[data-tone="good"],
+.account-status[data-tone="admin"] {
+  color: #d8f0d5;
+}
+
+.account-status[data-tone="bad"] {
+  color: #ffb4a8;
+}
+
+.account-status[data-tone="admin"]::after {
+  content: " admin";
+  color: var(--gold);
+  font-size: 0.78em;
+  text-transform: uppercase;
+}
+
+.account-field {
+  display: grid;
+  gap: 5px;
+  justify-items: stretch;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.account-field input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(244, 234, 214, 0.2);
+  border-radius: 9px;
+  background: rgba(13, 12, 10, 0.54);
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 1rem;
+  text-transform: none;
+}
+
+.account-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.account-actions button {
+  min-height: 50px;
+  border-radius: 9px;
+  background: rgba(74, 36, 31, 0.76);
+  padding: 10px 12px;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.account-actions button:hover {
+  background: rgba(99, 49, 41, 0.88);
+}
+
+#auth-logout {
+  grid-column: 1 / -1;
+  background: rgba(45, 39, 29, 0.72);
+}
+
+.account-help {
+  display: block;
+  text-align: center;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.28;
+}
+
+.account-popover {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: start start;
+  padding: 64px 12px 12px;
+  background: rgba(9, 8, 6, 0.18);
+}
+
+.account-popover[hidden] {
+  display: none;
+}
+
+.account-card {
+  width: min(430px, calc(100vw - 24px));
+  border: 1px solid rgba(216, 170, 61, 0.36);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(37, 32, 22, 0.9), rgba(23, 19, 13, 0.94)),
+    #1f1a13;
+  padding: 16px;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.5);
+}
+
+.account-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.account-card-head strong {
+  font-family: Arial, sans-serif;
+  font-size: 1.3rem;
+}
+
+.account-line {
+  margin: 0 0 14px;
+  border: 1px solid rgba(216, 170, 61, 0.18);
+  border-radius: 8px;
+  background: rgba(9, 8, 6, 0.28);
+  padding: 12px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.account-open-login {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 8px;
+  background: rgba(74, 36, 31, 0.78);
+  padding: 10px 12px;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.account-open-login:hover {
+  background: rgba(99, 49, 41, 0.9);
+}
+
+.debug-panel {
+  position: absolute;
+  z-index: 1000;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: 220px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #201a13;
+  padding: 8px;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.34);
+}
+
+.debug-panel button {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: #4a241f;
+  padding: 8px 10px;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+.debug-panel button:hover {
+  background: #633129;
+}
+
+.debug-menu[hidden] {
+  display: none;
+}
+
+.debug-section {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.debug-section summary {
+  min-height: 34px;
+  border-radius: 6px;
+  background: #2d271d;
+  padding: 9px 10px;
+  color: var(--ink);
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+.debug-section summary:hover {
+  background: #3a3022;
+}
+
+.debug-field {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+}
+
+.debug-field input,
+.debug-field select {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #15120e;
+  color: var(--ink);
+  padding: 7px 9px;
+  font: inherit;
+  text-transform: none;
+}
+
+.debug-field select {
+  cursor: pointer;
+}
+
+.eyebrow,
+.location,
+.stat > span {
+  margin: 0;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 4px 0 0;
+  max-width: 720px;
+  color: #fff2cf;
+  font-size: clamp(2rem, 4.3vw, 3.7rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.ghost-button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #2d271d;
+  padding: 10px 14px;
+  font-family: Arial, sans-serif;
+}
+
+.ghost-button:hover {
+  background: #3a3022;
+}
+
+.debug-toggle {
+  display: grid;
+  width: 34px;
+  min-height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  padding: 0;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  opacity: 0.58;
+}
+
+.debug-toggle:hover,
+.debug-toggle[aria-expanded="true"] {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.stats-grid {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(140px, 1.15fr) minmax(150px, 1fr) minmax(82px, 0.62fr) minmax(110px, 0.74fr) minmax(130px, 0.86fr);
+  align-items: center;
+  gap: clamp(6px, 1dvh, 10px);
+  margin-bottom: clamp(6px, 1dvh, 10px);
+  overflow: visible;
+}
+
+.stat-inventory {
+  position: relative;
+  z-index: 45;
+  order: 3;
+  display: grid;
+  align-items: center;
+  justify-items: start;
+  min-width: 0;
+  min-height: clamp(56px, 8.5dvh, 76px);
+  margin-left: 0;
+}
+
+.stat-place {
+  order: 5;
+  min-width: 0;
+  padding-inline: clamp(7px, 1dvh, 10px);
+}
+
+.stat-place strong {
+  font-size: clamp(1.15rem, 2.5dvh, 1.55rem);
+}
+
+.stat-purse {
+  order: 1;
+}
+
+.stat-life {
+  order: 2;
+  justify-self: start;
+  margin-left: 0;
+}
+
+.stat-loss {
+  order: 4;
+}
+
+.stat {
+  min-height: clamp(56px, 8.5dvh, 76px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(37, 32, 22, 0.88);
+  padding: clamp(8px, 1.25dvh, 12px);
+}
+
+.stat strong {
+  display: block;
+  margin-top: clamp(4px, 0.7dvh, 8px);
+  font-family: Arial, sans-serif;
+  font-size: clamp(1.25rem, 2.9dvh, 1.7rem);
+}
+
+.stat strong span {
+  color: inherit;
+  font-size: inherit;
+  text-transform: none;
+}
+
+.stat-purse strong {
+  color: var(--gold);
+}
+
+.stat-life,
+.stat-purse {
+  border-color: transparent;
+  background: transparent;
+  padding: 4px 0;
+}
+
+.stat-life {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  text-align: left;
+}
+
+.stat-life strong {
+  display: none;
+}
+
+.stat-purse {
+  display: grid;
+  grid-template-columns: minmax(42px, 60px) max-content;
+  gap: clamp(5px, 0.9dvh, 9px);
+  align-items: center;
+  justify-content: start;
+}
+
+.purse-visual {
+  width: var(--hud-icon);
+  aspect-ratio: 1;
+  background: url("assets/Ui/Bourse vide.png") center / contain no-repeat;
+  filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.28));
+}
+
+.stat-purse.has-gold .purse-visual {
+  background-image: url("assets/Ui/Bourse pleine.png");
+}
+
+.stat-purse > div strong {
+  display: block;
+  margin-top: 0;
+  color: var(--gold);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.inventory-toggle {
+  width: var(--inventory-size);
+  aspect-ratio: 1;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: url("assets/Ui/inventaire vide.png") center / contain no-repeat;
+  color: var(--ink);
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+  filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.28));
+  box-shadow: none;
+}
+
+.inventory-toggle.has-items {
+  background-image: url("assets/Ui/inventaire plein.png");
+}
+
+.inventory-toggle:hover,
+.inventory-toggle[aria-expanded="true"] {
+  filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.34)) brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.inventory-toggle span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.inventory-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: 50%;
+  width: max-content;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.inventory-popover[hidden] {
+  display: none;
+}
+
+.inventory-card {
+  width: clamp(300px, 28vw, 390px);
+  max-width: calc(100vw - 24px);
+  max-height: min(560px, calc(100dvh - 120px));
+  overflow: visible;
+  border: 1px solid rgba(216, 170, 61, 0.36);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(37, 32, 22, 0.96), rgba(23, 19, 13, 0.98)),
+    #1f1a13;
+  padding: 14px;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.5);
+}
+
+.inventory-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.inventory-eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inventory-card-head strong {
+  font-family: Arial, sans-serif;
+  font-size: 1.25rem;
+}
+
+.inventory-close {
+  width: 34px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(216, 170, 61, 0.28);
+  border-radius: 50%;
+  background: rgba(216, 170, 61, 0.08);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+}
+
+.inventory-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.inventory-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  border: 1px dashed rgba(216, 170, 61, 0.28);
+  border-radius: 8px;
+  color: var(--muted);
+  padding: 18px;
+  text-align: center;
+}
+
+.inventory-item {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(70px, 1fr) auto;
+  gap: 7px;
+  border: 1px solid rgba(216, 170, 61, 0.28);
+  border-radius: 8px;
+  background: rgba(216, 170, 61, 0.08);
+  color: var(--ink);
+  padding: 8px;
+  cursor: help;
+}
+
+.inventory-item img {
+  width: 100%;
+  height: 74px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.3));
+}
+
+.inventory-item span {
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.inventory-fallback {
+  justify-content: center;
+  min-height: 38px;
+}
+
+.upgrade-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+  font-family: Arial, sans-serif;
+}
+
+.upgrade-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(111, 172, 114, 0.34);
+  border-radius: 999px;
+  background: rgba(111, 172, 114, 0.12);
+  padding: 4px 8px;
+  color: #d8f0d5;
+  font-size: 0.74rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.item-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border: 1px solid rgba(216, 170, 61, 0.32);
+  border-radius: 999px;
+  background: rgba(216, 170, 61, 0.12);
+  padding: 5px 9px;
+  color: var(--ink);
+  font-size: 0.82rem;
+  outline: none;
+  white-space: nowrap;
+}
+
+.upgrade-chip::after,
+.item-chip::after,
+.inventory-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  bottom: auto;
+  z-index: 20;
+  width: min(260px, 78vw);
+  border: 1px solid rgba(216, 170, 61, 0.35);
+  border-radius: 8px;
+  background: #1f1a13;
+  color: var(--ink);
+  padding: 10px 12px;
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.36);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  white-space: normal;
+}
+
+.upgrade-chip::before,
+.item-chip::before,
+.inventory-item::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: calc(100% + 4px);
+  bottom: auto;
+  z-index: 21;
+  width: 10px;
+  height: 10px;
+  background: #1f1a13;
+  border-right: 1px solid rgba(216, 170, 61, 0.35);
+  border-bottom: 1px solid rgba(216, 170, 61, 0.35);
+  opacity: 0;
+  rotate: 225deg;
+  transition: opacity 120ms ease;
+}
+
+.upgrade-chip:hover,
+.upgrade-chip:focus,
+.item-chip:hover,
+.item-chip:focus,
+.inventory-item:hover,
+.inventory-item:focus {
+  background: rgba(216, 170, 61, 0.2);
+}
+
+.upgrade-chip:hover::after,
+.upgrade-chip:focus::after,
+.upgrade-chip:hover::before,
+.upgrade-chip:focus::before,
+.item-chip:hover::after,
+.item-chip:focus::after,
+.item-chip:hover::before,
+.item-chip:focus::before,
+.inventory-item:hover::after,
+.inventory-item:focus::after,
+.inventory-item:hover::before,
+.inventory-item:focus::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heart-row {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: start;
+  justify-items: start;
+  gap: 4px 7px;
+  margin-top: 4px;
+}
+
+.heart-icon {
+  width: clamp(22px, 3.5dvh, 30px);
+  aspect-ratio: 1;
+  background: url("assets/Ui/coeur vide.png") center / contain no-repeat;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.24));
+}
+
+.heart-icon.is-full {
+  background-image: url("assets/Ui/coeur plein.png");
+}
+
+.heart-icon.is-lost {
+  animation: heartLost 720ms ease-out both;
+}
+
+.heart-icon.is-gained {
+  animation: heartGained 760ms ease-out both;
+}
+
+@keyframes heartLost {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(191, 76, 59, 0));
+  }
+
+  34% {
+    opacity: 0.45;
+    transform: scale(1.42) rotate(-10deg);
+    filter: drop-shadow(0 0 14px rgba(191, 76, 59, 0.8));
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.24));
+  }
+}
+
+@keyframes heartGained {
+  0% {
+    opacity: 0.35;
+    transform: scale(0.45);
+  }
+
+  42% {
+    opacity: 1;
+    transform: scale(1.48);
+    filter: drop-shadow(0 0 16px rgba(111, 172, 114, 0.84));
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.24));
+  }
+}
+
+.scene {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #39372f 0%, #211d18 58%, #14110e 100%);
+  background-size: 72px 54px, 72px 54px, 100% 100%;
+  gap: clamp(6px, 1dvh, 12px);
+  padding: var(--scene-pad);
+}
+
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 34%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.hodor-sprite {
+  position: relative;
+  justify-self: center;
+  align-self: end;
+  z-index: 2;
+  width: var(--hodor-size);
+  aspect-ratio: 1 / 1;
+  background-image: url("assets/Hodor V0.1/Corps/Idle.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center bottom;
+  filter: drop-shadow(0 18px 16px rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.hodor-sprite.pose-idle,
+.hodor-sprite.pose-question {
+  animation: hodorIdle 1600ms ease-in-out infinite alternate;
+}
+
+.hodor-sprite.pose-walk,
+.hodor-sprite.pose-fuite {
+  animation: hodorIdle 900ms ease-in-out infinite alternate;
+}
+
+.hodor-sprite.pose-releve {
+  animation: hodorIdle 1200ms ease-in-out infinite alternate;
+}
+
+.hodor-sprite.pose-victory {
+  animation: hodorIdle 1200ms ease-in-out infinite alternate;
+}
+
+.hodor-sprite.pose-hurt {
+  animation: hodorHit 360ms ease;
+}
+
+.hodor-sprite.pose-ko {
+  animation: hodorHit 520ms ease both;
+}
+
+.hodor-sprite.pose-combat {
+  animation: hodorCombat 520ms ease-in-out infinite alternate;
+}
+
+.hodor-sprite.pose-combat-2,
+.hodor-sprite.pose-combat-3 {
+  animation: hodorAttack 420ms ease-out both;
+}
+
+.hodor-sprite.pose-dead {
+  animation: none;
+  aspect-ratio: 1.7 / 1;
+  background-position: center top;
+}
+
+.scene.is-cell .reward-row {
+  grid-template-columns: 1fr;
+  min-height: clamp(140px, 24dvh, 260px);
+}
+
+.scene.is-cell .reward-panel {
+  display: none;
+}
+
+.scene.is-cell .hodor-sprite {
+  justify-self: center;
+}
+
+.scene.is-village .reward-row,
+.scene.is-cell .reward-row,
+.scene.no-reward .reward-row {
+  grid-template-columns: 1fr;
+}
+
+.scene.is-village .reward-panel,
+.scene.no-reward .reward-panel {
+  display: none;
+}
+
+.scene.is-village .hodor-sprite,
+.scene.no-reward .hodor-sprite {
+  justify-self: center;
+}
+
+@keyframes hodorIdle {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes hodorCombat {
+  from {
+    transform: translateX(0) rotate(-1deg);
+  }
+
+  to {
+    transform: translateX(-8px) rotate(2deg);
+  }
+}
+
+@keyframes hodorHit {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  35% {
+    transform: translateX(8px);
+  }
+
+  70% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes hodorAttack {
+  0% {
+    transform: translateX(0) scale(0.96) rotate(-2deg);
+  }
+
+  52% {
+    transform: translateX(28px) scale(1.06) rotate(3deg);
+  }
+
+  100% {
+    transform: translateX(0) scale(1) rotate(0);
+  }
+}
+
+.story-panel {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+  border-left: 4px solid var(--gold);
+  background: rgba(24, 22, 17, 0.78);
+  padding: clamp(9px, 1.25dvh, 14px) clamp(12px, 1.6dvh, 18px);
+  animation: panelIn 180ms ease both;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0.72;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scene.story-good .story-panel {
+  border-left-color: var(--good);
+  background: linear-gradient(90deg, rgba(111, 172, 114, 0.15), rgba(24, 22, 17, 0.8));
+}
+
+.scene.story-bad .story-panel {
+  border-left-color: var(--danger);
+  background: linear-gradient(90deg, rgba(191, 76, 59, 0.16), rgba(24, 22, 17, 0.8));
+}
+
+.story {
+  margin: clamp(4px, 0.7dvh, 8px) 0 0;
+  max-width: 100%;
+  font-size: clamp(0.78rem, 1.45dvh, 1.02rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.scene.is-dead .story {
+  font-size: clamp(0.72rem, 1.28dvh, 0.92rem);
+  line-height: 1.14;
+}
+
+.story .po-text {
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .heart-good {
+  color: var(--good);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .heart-bad {
+  color: var(--danger);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .floor-total {
+  color: #d7c0ff;
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .floor-down {
+  color: var(--good);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .floor-up,
+.story .item-bad {
+  color: var(--danger);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .item-loot {
+  color: #ffe08a;
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.story .item-loot,
+.story .item-bad {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.78em;
+  line-height: 1.35;
+  vertical-align: 0.08em;
+  white-space: nowrap;
+}
+
+.story .item-loot {
+  border: 1px solid rgba(216, 170, 61, 0.46);
+  background: rgba(216, 170, 61, 0.15);
+  color: #ffe08a;
+  box-shadow: 0 0 14px rgba(216, 170, 61, 0.18);
+}
+
+.story .item-bad {
+  border: 1px solid rgba(191, 76, 59, 0.5);
+  background: rgba(191, 76, 59, 0.15);
+  color: #f1a092;
+}
+
+.reward-row {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: max-content minmax(220px, 1fr);
+  gap: clamp(8px, 1.3dvh, 18px);
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  margin: clamp(3px, 0.7dvh, 8px) 0 0;
+}
+
+.reward-panel {
+  justify-self: start;
+  width: fit-content;
+  max-width: min(360px, 100%);
+  min-height: 0;
+  align-self: start;
+  border: 1px solid rgba(216, 170, 61, 0.22);
+  border-left: 4px solid var(--gold);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(216, 170, 61, 0.12), rgba(24, 22, 17, 0.78));
+  padding: 10px 14px;
+  animation: panelIn 180ms ease both;
+}
+
+.reward-panel:not([hidden]) {
+  animation: panelIn 180ms ease both, rewardPulse 950ms ease-out both;
+}
+
+.reward-row:has(.reward-panel[hidden]) {
+  grid-template-columns: 1fr;
+}
+
+.reward-row:has(.reward-panel[hidden]) .hodor-sprite {
+  justify-self: center;
+}
+
+.flying-coin {
+  position: fixed;
+  z-index: 1001;
+  width: clamp(56px, 8dvh, 82px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    url("assets/Ui/po.png") center / contain no-repeat,
+    radial-gradient(circle at 35% 30%, #fff2a7 0 12%, #f4c94e 13% 48%, #9d6415 49% 100%);
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.42));
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: coinToPurse 1550ms cubic-bezier(0.2, 0.82, 0.22, 1) forwards;
+  animation-delay: var(--coin-delay, 0ms);
+}
+
+.flying-purse {
+  position: fixed;
+  z-index: 1001;
+  width: clamp(74px, 10dvh, 110px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: url("assets/Ui/Bourse pleine.png") center / contain no-repeat;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.46));
+  transform: translate(-50%, -50%);
+  animation: purseToEffect 1600ms cubic-bezier(0.18, 0.76, 0.28, 1) forwards;
+}
+
+@keyframes rewardPulse {
+  0% {
+    transform: scale(0.96);
+    filter: brightness(1.35);
+  }
+
+  42% {
+    transform: scale(1.04);
+    filter: brightness(1.18);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes coinToPurse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55) rotate(0deg);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--coin-drift, 0px)), calc(-50% - 38px)) scale(1.26) rotate(80deg);
+  }
+
+  58% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--coin-mid-x) + var(--coin-drift, 0px)), calc(-50% + var(--coin-mid-y) - 34px)) scale(1.08) rotate(310deg);
+  }
+
+  100% {
+    opacity: 0.1;
+    transform: translate(calc(-50% + var(--coin-x)), calc(-50% + var(--coin-y))) scale(0.36) rotate(520deg);
+  }
+}
+
+@keyframes purseToEffect {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+
+  22% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 18px)) scale(1.18) rotate(-8deg);
+  }
+
+  72% {
+    opacity: 0.9;
+    transform: translate(calc(-50% + var(--purse-mid-x)), calc(-50% + var(--purse-mid-y) - 12px)) scale(0.9) rotate(-18deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--purse-x)), calc(-50% + var(--purse-y))) scale(0.42) rotate(-24deg);
+  }
+}
+
+.scene.story-good .reward-panel {
+  border-left-color: var(--good);
+  background: linear-gradient(90deg, rgba(111, 172, 114, 0.16), rgba(24, 22, 17, 0.78));
+}
+
+.scene.story-bad .reward-panel,
+.scene.is-dead .reward-panel {
+  border-left-color: var(--danger);
+  background: linear-gradient(90deg, rgba(191, 76, 59, 0.17), rgba(24, 22, 17, 0.78));
+}
+
+.reward-panel[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
+.reward-label {
+  margin: 0;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.reward-text {
+  margin: 6px 0 0;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.42;
+}
+
+.reward-text br {
+  display: block;
+  content: "";
+  margin-top: 4px;
+}
+
+.reward-text .po-text {
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .heart-good {
+  color: var(--good);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .heart-bad,
+.reward-text .item-bad {
+  color: var(--danger);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .floor-total {
+  color: #d7c0ff;
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .floor-down {
+  color: var(--good);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .floor-up {
+  color: var(--danger);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.reward-text .item-loot,
+.reward-text .item-bad {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.78em;
+  line-height: 1.35;
+  vertical-align: 0.08em;
+  white-space: nowrap;
+}
+
+.reward-text .item-loot {
+  border: 1px solid rgba(216, 170, 61, 0.46);
+  background: rgba(216, 170, 61, 0.15);
+  color: #ffe08a;
+  box-shadow: 0 0 14px rgba(216, 170, 61, 0.18);
+}
+
+.reward-text .item-bad {
+  border: 1px solid rgba(191, 76, 59, 0.5);
+  background: rgba(191, 76, 59, 0.15);
+  color: #f1a092;
+}
+
+.action-zone {
+  position: relative;
+  z-index: 3;
+  margin-top: auto;
+  border-top: 1px solid rgba(216, 170, 61, 0.22);
+  background:
+    linear-gradient(180deg, rgba(24, 22, 17, 0.04), rgba(0, 0, 0, 0.22)),
+    rgba(15, 13, 10, 0.32);
+  padding: clamp(6px, 1dvh, 10px) clamp(6px, 1dvh, 10px) 0;
+}
+
+.scene.is-village .action-zone {
+  padding-top: 8px;
+}
+
+.ko-banner,
+.win-banner {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  margin-bottom: clamp(6px, 1dvh, 14px);
+  border: 1px solid rgba(244, 234, 214, 0.18);
+  border-radius: 8px;
+  padding: clamp(10px, 1.4dvh, 14px) 18px;
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.28);
+}
+
+.ko-banner {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  border-left: 8px solid var(--danger);
+  background: linear-gradient(90deg, rgba(191, 76, 59, 0.95), rgba(74, 30, 24, 0.92));
+  text-align: center;
+}
+
+.win-banner {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  border-left: 8px solid var(--good);
+  background: linear-gradient(90deg, rgba(82, 150, 88, 0.95), rgba(35, 83, 50, 0.92));
+  text-align: center;
+}
+
+.ko-banner[hidden],
+.win-banner[hidden] {
+  display: none;
+}
+
+.ko-banner strong,
+.win-banner strong {
+  font-family: Arial, sans-serif;
+  font-size: clamp(2rem, 6vw, 3.7rem);
+  line-height: 0.85;
+}
+
+.ko-banner span,
+.win-banner span {
+  font-family: Arial, sans-serif;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.scene.is-dead .story-panel {
+  border-left-color: var(--danger);
+}
+
+.scene.is-dead .reward-row {
+  align-items: start;
+  margin-top: clamp(4px, 1dvh, 10px);
+}
+
+.scene.is-dead .hodor-sprite {
+  align-self: center;
+  width: var(--dead-hodor-size);
+  margin-top: clamp(-18px, -2dvh, 0px);
+}
+
+.doors {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: end;
+  justify-items: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+}
+
+.door {
+  position: relative;
+  aspect-ratio: 0.75;
+  height: var(--door-height);
+  min-height: 0;
+  width: 100%;
+  max-width: calc(var(--door-height) * 0.76);
+  border: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+  box-shadow: none;
+  transform-origin: center bottom;
+  transition: opacity 420ms ease, transform 2000ms ease, filter 420ms ease;
+}
+
+.door[data-door="0"] {
+  background-image: url("assets/Donjon/porte-1-ferme.png");
+}
+
+.door[data-door="1"] {
+  background-image: url("assets/Donjon/porte-2-ferme.png");
+}
+
+.door[data-door="2"] {
+  background-image: url("assets/Donjon/porte-3-ferme.png");
+}
+
+.door[data-door="0"]:hover:not(:disabled),
+.door[data-door="0"].chosen {
+  background-image: url("assets/Donjon/porte-1-ouvert.png");
+}
+
+.door[data-door="1"]:hover:not(:disabled),
+.door[data-door="1"].chosen {
+  background-image: url("assets/Donjon/porte-2-ouvert.png");
+}
+
+.door[data-door="2"]:hover:not(:disabled),
+.door[data-door="2"].chosen {
+  background-image: url("assets/Donjon/porte-3-ouvert.png");
+}
+
+.door:hover:not(:disabled) {
+  transform: translateY(-8px);
+  filter: brightness(1.12) drop-shadow(0 18px 18px rgba(0, 0, 0, 0.42));
+}
+
+.door.chosen {
+  z-index: 3;
+}
+
+.door:disabled {
+  filter: saturate(0.72) brightness(0.86);
+}
+
+.doors.resolving .door:not(.chosen) {
+  opacity: 0;
+  transform: translateY(18px) scale(0.86);
+  pointer-events: none;
+}
+
+.doors.resolving .door.chosen {
+  filter: brightness(1.18) drop-shadow(0 28px 26px rgba(0, 0, 0, 0.5));
+}
+
+.doors.resolving .door[data-door="0"].chosen {
+  transform: translateX(calc(100% + 10px)) translateY(-58px) scale(1.75);
+}
+
+.doors.resolving .door[data-door="1"].chosen {
+  transform: translateY(-58px) scale(1.75);
+}
+
+.doors.resolving .door[data-door="2"].chosen {
+  transform: translateX(calc(-100% - 10px)) translateY(-58px) scale(1.75);
+}
+
+.door-number {
+  display: none;
+}
+
+.door-knob {
+  display: none;
+}
+
+.door-hint {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(216, 170, 61, 0.44);
+  background: rgba(24, 22, 17, 0.9);
+  padding: 8px 9px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.15;
+  text-align: center;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.3);
+}
+
+.combat-choices,
+.village-choices,
+.death-choices,
+.shop-panel {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.combat-choices[hidden],
+.village-choices[hidden],
+.death-choices[hidden],
+.shop-panel[hidden],
+.doors[hidden] {
+  display: none;
+}
+
+.combat-choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.combat-choices.has-monster-target {
+  display: flex;
+  justify-content: center;
+  max-width: min(100%, 520px);
+}
+
+.combat-choices.has-monster-target .combat-choice {
+  display: none;
+}
+
+.monster-target {
+  display: grid;
+  width: min(100%, 440px);
+  gap: 0;
+  filter: drop-shadow(0 24px 18px rgba(0, 0, 0, 0.45));
+}
+
+.monster-target[hidden] {
+  display: none;
+}
+
+.monster-part {
+  display: block;
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.monster-part:hover {
+  transform: scale(1.035);
+  filter: brightness(1.14) drop-shadow(0 0 14px rgba(216, 170, 61, 0.26));
+}
+
+.scene.is-combat.is-locked .monster-target {
+  pointer-events: none;
+  filter: drop-shadow(0 24px 18px rgba(0, 0, 0, 0.45)) brightness(0.78);
+}
+
+.rat-target .monster-head {
+  aspect-ratio: 843 / 410;
+  background-image: url("assets/Monstres/Rat/tete.png");
+}
+
+.rat-target .monster-torso {
+  aspect-ratio: 843 / 315;
+  background-image: url("assets/Monstres/Rat/corps.png");
+}
+
+.rat-target .monster-legs {
+  aspect-ratio: 843 / 221;
+  background-image: url("assets/Monstres/Rat/jambes.png");
+}
+
+.skeleton-target .monster-head {
+  aspect-ratio: 764 / 414;
+  background-image: url("assets/Monstres/Squelette fatigue/tete.png");
+}
+
+.skeleton-target .monster-torso {
+  aspect-ratio: 764 / 255;
+  background-image: url("assets/Monstres/Squelette fatigue/corps.png");
+}
+
+.skeleton-target .monster-legs {
+  aspect-ratio: 764 / 372;
+  background-image: url("assets/Monstres/Squelette fatigue/jambes.png");
+}
+
+.guard-target .monster-head {
+  aspect-ratio: 797 / 390;
+  background-image: url("assets/Monstres/Guard/Tete.png");
+}
+
+.guard-target .monster-torso {
+  aspect-ratio: 797 / 206;
+  background-image: url("assets/Monstres/Guard/corps.png");
+}
+
+.guard-target .monster-legs {
+  aspect-ratio: 797 / 363;
+  background-image: url("assets/Monstres/Guard/jambe.png");
+}
+
+.combat-choice {
+  min-height: clamp(104px, 16dvh, 148px);
+  border: 1px solid rgba(216, 170, 61, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(191, 76, 59, 0.22), rgba(37, 32, 22, 0.94)),
+    #2d271d;
+  padding: 16px;
+  text-align: left;
+  box-shadow: 0 18px 24px rgba(0, 0, 0, 0.22);
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.restart-card {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: clamp(150px, 24dvh, 210px);
+  border: 1px solid rgba(216, 170, 61, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(24, 22, 17, 0.14), rgba(24, 22, 17, 0.66)),
+    url("assets/Donjon/porte%20geole%20ferm%C3%A9.png") center / cover no-repeat,
+    #2d271d;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 18px 24px rgba(0, 0, 0, 0.22);
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.restart-card:hover {
+  transform: translateY(-5px);
+  background:
+    linear-gradient(180deg, rgba(191, 76, 59, 0.2), rgba(45, 39, 29, 0.96)),
+    url("assets/Donjon/porte%20geole%20ouverte.png") center / cover no-repeat,
+    url("assets/Donjon/porte%20geole%20ferm%C3%A9.png") center / cover no-repeat,
+    #33291d;
+}
+
+.combat-choice:hover {
+  transform: translateY(-5px);
+  background:
+    linear-gradient(180deg, rgba(216, 170, 61, 0.2), rgba(45, 39, 29, 0.96)),
+    #33291d;
+}
+
+.combat-choice span,
+.restart-card span,
+.building strong {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.restart-card span {
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+}
+
+.restart-card span,
+.restart-card small {
+  display: none;
+}
+
+.combat-choice small,
+.restart-card small,
+.building small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  line-height: 1.35;
+}
+
+.restart-card span,
+.restart-card small {
+  display: none;
+}
+
+.village-choices {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 18px;
+}
+
+.scene.is-village {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.86fr) minmax(430px, 1.14fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(8px, 1.2dvh, 14px) 18px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #393123 0%, #241f18 55%, #15120f 100%);
+  background-size: 72px 54px, 72px 54px, 100% 100%;
+}
+
+.scene.is-village .ko-banner,
+.scene.is-village .win-banner {
+  grid-column: 1 / -1;
+}
+
+.scene.is-village .story-panel {
+  grid-column: 1 / -1;
+}
+
+.scene.is-village .reward-row {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: center;
+  justify-items: center;
+  margin: 0;
+  padding-top: 0;
+}
+
+.scene.is-village .hodor-sprite {
+  width: var(--village-hodor-size);
+}
+
+.scene.is-village .action-zone {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: start;
+  margin: 0;
+  border-top: 0;
+  background: rgba(15, 13, 10, 0.18);
+  padding: clamp(6px, 1dvh, 10px);
+}
+
+.scene.is-combat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px 18px;
+  align-items: center;
+  animation: combatPulse 900ms ease-in-out infinite alternate;
+  box-shadow: inset 0 0 0 1px rgba(191, 76, 59, 0.35), 0 0 30px rgba(191, 76, 59, 0.16);
+}
+
+.scene.is-combat .story-panel {
+  grid-column: 1 / -1;
+}
+
+.scene.is-combat .reward-row {
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-self: center;
+  margin: 0;
+}
+
+.scene.is-combat .reward-panel[hidden] {
+  display: none;
+}
+
+.scene.is-combat .hodor-sprite {
+  width: min(100%, clamp(320px, 44dvh, 500px));
+  align-self: center;
+  justify-self: center;
+}
+
+.scene.is-combat .action-zone {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  margin: 0;
+  border-top: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.scene.is-combat .combat-choices {
+  align-items: center;
+}
+
+.scene.is-combat .combat-choices.has-monster-target {
+  max-width: 100%;
+}
+
+.scene.is-combat .monster-target {
+  width: min(100%, clamp(280px, 40dvh, 440px));
+}
+
+.scene.is-village.has-win-banner .win-banner {
+  padding-block: clamp(8px, 1.5dvh, 14px);
+}
+
+.scene.is-village.has-win-banner .story-panel {
+  padding-block: clamp(7px, 1.1dvh, 12px);
+}
+
+.scene.is-village.has-win-banner .hodor-sprite {
+  width: clamp(280px, 40dvh, 480px);
+}
+
+@keyframes combatPulse {
+  from {
+    background-color: rgba(191, 76, 59, 0);
+    filter: none;
+  }
+
+  to {
+    background-color: rgba(191, 76, 59, 0.16);
+    filter: saturate(1.12);
+  }
+}
+
+#bank-building {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+#tavern-building {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#shop-building {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.village-stat-card {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  align-content: center;
+  min-height: clamp(96px, 15dvh, 170px);
+  border: 1px solid rgba(216, 170, 61, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(216, 170, 61, 0.16), rgba(24, 22, 17, 0.86)),
+    rgba(24, 22, 17, 0.82);
+  padding: clamp(12px, 1.6dvh, 20px);
+}
+
+.village-stat-card > span {
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.village-stat-card strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.82rem, 1.35vw, 0.98rem);
+  line-height: 1.1;
+}
+
+.village-stat-card strong span {
+  color: inherit;
+  font: inherit;
+  text-transform: none;
+}
+
+.village-stat-card strong:nth-of-type(2) span,
+.village-stat-card strong:nth-of-type(2) {
+  color: var(--danger);
+}
+
+.village-stat-card small {
+  display: block;
+  margin-top: 9px;
+  color: #d8aa3d;
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.78rem, 1.45vw, 0.96rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.building {
+  position: relative;
+  min-height: clamp(120px, 18dvh, 220px);
+  overflow: hidden;
+  border: 1px solid rgba(244, 234, 214, 0.13);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 40%),
+    repeating-linear-gradient(90deg, #6a6252, #6a6252 28px, #5a5144 29px, #5a5144 55px);
+  padding: 98px 20px 18px;
+  text-align: left;
+  box-shadow: 0 24px 20px rgba(0, 0, 0, 0.28);
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.building::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+}
+
+.building strong,
+.building small {
+  position: relative;
+  z-index: 1;
+}
+
+.building:hover {
+  transform: translateY(-7px);
+  filter: brightness(1.08);
+  box-shadow: 0 28px 24px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(216, 170, 61, 0.22);
+}
+
+.building-roof {
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  top: 0;
+  height: 78px;
+  background:
+    linear-gradient(135deg, transparent 0 18%, #5d271e 18% 50%, #742f24 50% 82%, transparent 82%),
+    linear-gradient(180deg, #8a3b2c, #56251d);
+  border-bottom: 8px solid rgba(44, 36, 25, 0.9);
+}
+
+.building-icon {
+  position: absolute;
+  top: 112px;
+  right: 20px;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 4px solid rgba(0, 0, 0, 0.26);
+  border-radius: 50%;
+  background: var(--gold);
+  color: #24180e;
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.building-icon,
+.bank-building .building-icon {
+  display: none;
+}
+
+.bank-building {
+  min-height: clamp(130px, 19dvh, 220px);
+  border-color: transparent;
+  background: url("assets/Village/banque.png") center / contain no-repeat;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.bank-building .building-roof,
+.tavern-building .building-roof,
+.shop-building .building-roof {
+  display: none;
+}
+
+.bank-building::after,
+.tavern-building::after,
+.shop-building::after {
+  display: none;
+}
+
+.bank-building strong,
+.bank-building small,
+.tavern-building strong,
+.tavern-building small,
+.shop-building strong,
+.shop-building small {
+  display: none;
+}
+
+.building-bank-total {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  border: 1px solid rgba(216, 170, 61, 0.42);
+  border-radius: 999px;
+  background: rgba(22, 17, 10, 0.9);
+  padding: 8px 13px;
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.32);
+}
+
+.tavern-building {
+  min-height: clamp(130px, 19dvh, 220px);
+  border-color: transparent;
+  background: url("assets/Village/Taverne.png") center / contain no-repeat;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.shop-building {
+  min-height: clamp(130px, 19dvh, 220px);
+  border-color: transparent;
+  background: url("assets/Village/Echoppe.png") center / contain no-repeat;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.shop-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(24, 22, 17, 0.86);
+  padding: 16px;
+  width: min(100%, 980px);
+  max-width: 980px;
+  max-height: min(64dvh, 620px);
+  overflow: auto;
+}
+
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.shop-header span,
+.upgrade-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.shop-header strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.shop-header button,
+.upgrade-card button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #6f4027;
+  padding: 9px 12px;
+  font-family: Arial, sans-serif;
+}
+
+.shop-header button:hover,
+.upgrade-card button:hover:not(:disabled) {
+  background: #8a5232;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.upgrade-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(48, 39, 25, 0.82);
+  padding: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.upgrade-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.upgrade-card p {
+  min-height: 64px;
+  margin: 10px 0 12px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  .game-shell {
+    width: min(100% - 20px, 560px);
+    padding: 10px 0;
+  }
+
+  .topbar {
+    right: 10px;
+    bottom: 72px;
+  }
+
+  .debug-panel {
+    left: auto;
+    right: 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: minmax(78px, 0.72fr) minmax(126px, 1.05fr) minmax(58px, 0.5fr) minmax(82px, 0.62fr) minmax(104px, 0.78fr);
+  }
+
+  .stat-purse {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    justify-content: center;
+    align-content: center;
+    gap: 1px;
+  }
+
+  .stat-purse > div strong {
+    font-size: clamp(0.95rem, 3.6vw, 1.4rem);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .scene {
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .story-panel,
+  .ko-banner,
+  .win-banner {
+    max-width: 100%;
+  }
+
+  .doors {
+    gap: 10px;
+    margin-top: 0;
+    justify-items: center;
+  }
+
+  .combat-choices,
+  .death-choices,
+  .shop-panel,
+  .upgrade-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .village-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #bank-building {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #tavern-building {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #shop-building {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .combat-choice {
+    min-height: 112px;
+  }
+
+  .door {
+    height: var(--door-height);
+    min-height: 0;
+    max-width: calc(var(--door-height) * 0.76);
+  }
+
+  .reward-row {
+    grid-template-columns: max-content minmax(160px, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .hodor-sprite {
+    width: var(--hodor-size);
+  }
+
+}
+
+@media (min-width: 621px) and (max-width: 760px) {
+  .game-shell {
+    width: min(100% - 20px, 720px);
+  }
+
+  .topbar {
+    right: 12px;
+    bottom: 76px;
+  }
+
+  .stats-grid {
+    grid-template-columns: minmax(86px, 0.72fr) minmax(150px, 1.08fr) minmax(72px, 0.52fr) minmax(96px, 0.68fr) minmax(116px, 0.82fr);
+  }
+
+  .stat-inventory {
+    order: 3;
+  }
+
+  .stat-place {
+    order: 5;
+  }
+
+  .stat-purse {
+    order: 1;
+  }
+
+  .stat-life {
+    order: 2;
+  }
+
+  .stat-loss {
+    order: 4;
+  }
+
+  .scene.is-village {
+    grid-template-columns: minmax(220px, 0.9fr) minmax(340px, 1.1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .scene.is-village {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(120px, 23dvh) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 7px;
+    padding: var(--scene-pad);
+  }
+
+  .scene.is-village .story-panel {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .scene.is-village .reward-row {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    align-self: center;
+    justify-self: center;
+    justify-items: center;
+  }
+
+  .scene.is-village .action-zone {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    margin: 0;
+    border-top: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .scene.is-village.has-win-banner {
+    grid-template-rows: auto auto minmax(100px, 18dvh) minmax(0, 1fr);
+  }
+
+  .scene.is-village.has-win-banner .win-banner {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
+  .scene.is-village.has-win-banner .story-panel {
+    grid-row: 2;
+  }
+
+  .scene.is-village.has-win-banner .reward-row {
+    grid-row: 3;
+  }
+
+  .scene.is-village.has-win-banner .action-zone {
+    grid-row: 4;
+  }
+
+  .village-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-content: start;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(72px, 12dvh, 110px);
+  }
+}
+
+@media (max-height: 840px) {
+  .game-shell {
+    --hud-icon: clamp(40px, 6.5dvh, 56px);
+    --heart-size: clamp(22px, 3.4dvh, 30px);
+    --inventory-size: clamp(50px, 7.5dvh, 68px);
+    --hodor-size: clamp(250px, 42dvh, 500px);
+    --village-hodor-size: clamp(300px, 48dvh, 580px);
+    --dead-hodor-size: clamp(330px, 50dvh, 640px);
+    --door-height: clamp(126px, 21dvh, 230px);
+  }
+
+  .stats-grid {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .stat {
+    min-height: 54px;
+    padding: 8px 10px;
+  }
+
+  .upgrade-summary {
+    margin-top: 5px;
+  }
+
+  .item-chip,
+  .upgrade-chip {
+    padding-block: 3px;
+    font-size: 0.72rem;
+  }
+
+  .heart-row {
+    gap: 3px 5px;
+    margin-top: 0;
+  }
+
+  .heart-icon {
+    width: var(--heart-size);
+  }
+
+  .stat-purse {
+    grid-template-columns: 42px max-content;
+    gap: 5px;
+  }
+
+  .purse-visual {
+    width: var(--hud-icon);
+  }
+
+  .stat-purse > div strong {
+    font-size: 1.55rem;
+  }
+
+  .story-panel {
+    padding: 8px 12px;
+  }
+
+  .story {
+    font-size: clamp(0.76rem, 1.55dvh, 0.92rem);
+    line-height: 1.18;
+  }
+
+  .reward-panel {
+    padding: 8px 11px;
+  }
+
+  .hodor-sprite {
+    width: var(--hodor-size);
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: var(--village-hodor-size);
+  }
+
+  .door {
+    height: var(--door-height);
+  }
+
+  .village-choices {
+    gap: 10px;
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(108px, 16dvh, 170px);
+  }
+
+  .village-stat-card strong {
+    margin-top: 4px;
+    font-size: clamp(0.76rem, 1.3dvh, 0.88rem);
+    line-height: 1.08;
+  }
+
+  .village-stat-card small {
+    margin-top: 6px;
+    font-size: clamp(0.66rem, 1.1dvh, 0.75rem);
+  }
+}
+
+@media (max-height: 720px) {
+  .game-shell {
+    padding-block: 4px;
+    --hud-icon: clamp(36px, 6dvh, 48px);
+    --heart-size: clamp(20px, 3.2dvh, 26px);
+    --inventory-size: clamp(44px, 7dvh, 58px);
+    --hodor-size: clamp(205px, 35dvh, 390px);
+    --village-hodor-size: clamp(230px, 38dvh, 430px);
+    --dead-hodor-size: clamp(270px, 43dvh, 520px);
+    --door-height: clamp(108px, 19dvh, 200px);
+  }
+
+  .topbar {
+    margin-bottom: 3px;
+  }
+
+  .stats-grid {
+    margin-bottom: 4px;
+  }
+
+  .stat {
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+
+  .eyebrow,
+  .location,
+  .stat > span {
+    font-size: 0.68rem;
+  }
+
+  .story {
+    font-size: clamp(0.68rem, 1.45dvh, 0.84rem);
+    line-height: 1.14;
+  }
+
+  .scene {
+    padding: 7px;
+  }
+
+  .hodor-sprite {
+    width: var(--hodor-size);
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: var(--village-hodor-size);
+  }
+
+  .door {
+    height: var(--door-height);
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(94px, 15dvh, 145px);
+  }
+
+  .ko-banner strong,
+  .win-banner strong {
+    font-size: clamp(1.7rem, 5dvh, 2.8rem);
+  }
+}
+
+@media (max-width: 520px) {
+  body {
+    overflow: hidden;
+  }
+
+  .account-panel {
+    background:
+      linear-gradient(180deg, rgba(9, 10, 11, 0.04), rgba(9, 9, 8, 0.2)),
+      url("assets/Donjon/Donjon-accueil.png") 68% 16% / auto 152% no-repeat,
+      #201a13;
+  }
+
+  .game-shell {
+    width: min(100% - 10px, 520px);
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding-block: 5px;
+    --hud-icon: clamp(34px, 10vw, 44px);
+    --heart-size: clamp(21px, 6.5vw, 29px);
+    --inventory-size: clamp(44px, 13vw, 58px);
+    --hodor-size: clamp(190px, 33dvh, 330px);
+    --village-hodor-size: clamp(195px, 34dvh, 340px);
+    --dead-hodor-size: clamp(230px, 36dvh, 410px);
+    --door-height: clamp(112px, 18.5dvh, 174px);
+    --scene-pad: 6px;
+  }
+
+  .stats-grid {
+    grid-template-columns: minmax(48px, 0.52fr) minmax(96px, 0.95fr) minmax(46px, 0.42fr) minmax(56px, 0.5fr) minmax(96px, 0.96fr);
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .stat {
+    min-width: 0;
+    min-height: clamp(46px, 8dvh, 58px);
+    padding: 4px 5px;
+  }
+
+  .stat-place strong {
+    display: block;
+    max-width: 100%;
+    font-size: clamp(0.92rem, 4.35vw, 1.18rem);
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stat-place > span {
+    font-size: clamp(0.56rem, 2.45vw, 0.72rem);
+  }
+
+  .loss-score > span {
+    font-size: clamp(0.56rem, 2.45vw, 0.72rem);
+  }
+
+  #loss-count {
+    font-size: clamp(1.25rem, 6.2vw, 1.78rem);
+  }
+
+  .heart-icon {
+    width: clamp(20px, 6vw, 28px);
+  }
+
+  .stat-life {
+    margin-left: 0;
+    justify-self: stretch;
+    justify-items: center;
+    align-content: center;
+    padding-top: 0;
+  }
+
+  .heart-row {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, var(--heart-size)));
+    justify-content: center;
+    gap: 2px 4px;
+    margin-top: 0;
+  }
+
+  .inventory-toggle {
+    width: var(--inventory-size);
+  }
+
+  .inventory-popover {
+    left: 50%;
+    width: max-content;
+    transform: translateX(-50%);
+    padding: 0;
+  }
+
+  .inventory-card {
+    width: min(340px, calc(100vw - 20px));
+    max-height: min(520px, calc(100dvh - 88px));
+  }
+
+  .stat-inventory {
+    margin-left: 0;
+    justify-items: center;
+    align-content: center;
+    padding-top: 0;
+    min-height: clamp(46px, 8dvh, 58px);
+  }
+
+  .stat-purse {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    justify-content: center;
+    align-content: start;
+    gap: 1px;
+    padding-top: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .purse-visual {
+    width: var(--hud-icon);
+  }
+
+  .stat-purse > div strong {
+    font-size: clamp(0.88rem, 4.8vw, 1.28rem);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .scene.is-village {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(170px, 30dvh) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 5px;
+    min-height: 0;
+    padding: var(--scene-pad);
+  }
+
+  .scene.is-village .story-panel {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 8px 10px;
+  }
+
+  .scene.is-village .reward-row {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    align-self: center;
+    justify-self: center;
+    justify-items: center;
+  }
+
+  .scene.is-village .hodor-sprite {
+    width: auto;
+    max-width: var(--village-hodor-size);
+    max-height: 100%;
+  }
+
+  .scene.is-village .action-zone {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    align-self: stretch;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .scene.is-village.has-win-banner {
+    grid-template-rows: auto auto minmax(160px, 28dvh) minmax(0, 1fr);
+  }
+
+  .scene.is-village.has-win-banner .win-banner {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
+  .scene.is-village.has-win-banner .story-panel {
+    grid-row: 2;
+  }
+
+  .scene.is-village.has-win-banner .reward-row {
+    grid-row: 3;
+  }
+
+  .scene.is-village.has-win-banner .action-zone {
+    grid-row: 4;
+  }
+
+  .village-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    width: min(100%, 390px);
+    margin-inline: auto;
+    height: 100%;
+    align-content: start;
+    justify-content: center;
+  }
+
+  .village-stat-card,
+  .bank-building,
+  .tavern-building,
+  .shop-building {
+    min-height: clamp(66px, 11.5dvh, 96px);
+  }
+
+  .village-stat-card {
+    padding: 9px 10px;
+  }
+
+  .village-stat-card strong {
+    font-size: clamp(0.72rem, 3.25vw, 0.9rem);
+  }
+
+  .village-stat-card small {
+    font-size: clamp(0.62rem, 2.75vw, 0.74rem);
+  }
+
+  .building-bank-total {
+    right: 7px;
+    bottom: 7px;
+    padding: 5px 9px;
+    font-size: clamp(0.78rem, 3.5vw, 0.98rem);
+  }
+
+  .doors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    justify-items: center;
+    padding-inline: 0;
+  }
+
+  .door {
+    height: var(--door-height);
+    max-width: calc(var(--door-height) * 0.76);
+  }
+
+  .scene {
+    gap: 5px;
+  }
+
+  .hodor-sprite {
+    width: var(--hodor-size);
+  }
+
+  .scene.is-dead .hodor-sprite {
+    width: var(--dead-hodor-size);
+  }
+
+  .story-panel {
+    padding: 7px 9px;
+  }
+
+  .story {
+    font-size: clamp(0.66rem, 2.55vw, 0.86rem);
+    line-height: 1.12;
+  }
+
+  .reward-row {
+    grid-template-columns: minmax(70px, max-content) minmax(0, 1fr);
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .reward-panel {
+    max-width: min(42vw, 180px);
+    padding: 7px 9px;
+  }
+
+  .reward-text {
+    font-size: clamp(0.78rem, 3.2vw, 1rem);
+    line-height: 1.18;
+  }
+
+  .scene.is-cell .reward-row,
+  .scene.no-reward .reward-row {
+    min-height: clamp(112px, 24dvh, 220px);
+  }
+
+  #bank-building,
+  #tavern-building,
+  #shop-building {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .account-panel {
+    background:
+      linear-gradient(180deg, rgba(9, 10, 11, 0.04), rgba(9, 9, 8, 0.2)),
+      url("assets/Donjon/Donjon-accueil.png") 70% 14% / auto 162% no-repeat,
+      #201a13;
+  }
+
+  .game-shell {
+    --hud-icon: clamp(30px, 9vw, 40px);
+    --heart-size: clamp(18px, 5.4vw, 24px);
+    --inventory-size: clamp(38px, 11vw, 48px);
+    --hodor-size: clamp(168px, 30dvh, 278px);
+    --village-hodor-size: clamp(168px, 30dvh, 278px);
+    --door-height: clamp(104px, 17dvh, 158px);
+  }
+
+  .stats-grid {
+    grid-template-columns: 40px minmax(78px, 1fr) 34px 42px 88px;
+    gap: 2px;
+  }
+
+  .stat-place strong {
+    font-size: clamp(0.78rem, 4.25vw, 1rem);
+  }
+
+  .stat {
+    padding-inline: 4px;
+  }
+
+  .heart-row {
+    grid-template-columns: repeat(3, minmax(0, var(--heart-size)));
+    gap: 2px 3px;
+  }
+
+  .heart-icon {
+    width: var(--heart-size);
+  }
+
+  .inventory-toggle {
+    width: var(--inventory-size);
+  }
+
+  .stat-purse > div strong {
+    font-size: clamp(0.78rem, 4.5vw, 1.05rem);
+  }
+
+  .purse-visual {
+    width: var(--hud-icon);
+  }
+}
+
+/* Village scene refresh: one illustrated playfield, not a stack of UI cards. */
+.scene.is-village {
+  --village-bank-w: min(22vw, 24dvh, 290px);
+  --village-shop-w: min(22vw, 24dvh, 285px);
+  --village-tavern-w: min(24vw, 25dvh, 320px);
+  --village-board-w: min(23vw, 25dvh, 330px);
+  --village-hero-w: min(28vw, 40dvh, 430px);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1dvh, 12px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.scene.is-village.has-win-banner {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.scene.is-village .win-banner,
+.scene.is-village .ko-banner {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 9;
+}
+
+.scene.is-village .story-panel {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  z-index: 8;
+  width: 100%;
+  max-width: none;
+  padding: clamp(10px, 1.4dvh, 15px) clamp(14px, 1.8vw, 22px);
+}
+
+.scene.is-village.has-win-banner .story-panel {
+  grid-row: 2;
+}
+
+.scene.is-village .story {
+  max-width: min(74ch, 100%);
+}
+
+.scene.is-village .reward-row,
+.scene.is-village .action-zone {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.scene.is-village.has-win-banner .reward-row,
+.scene.is-village.has-win-banner .action-zone {
+  grid-row: 3;
+}
+
+.scene.is-village .reward-row {
+  position: relative;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+
+.scene.is-village .reward-panel {
+  position: absolute;
+  left: clamp(10px, 1.4vw, 22px);
+  top: clamp(8px, 1.2dvh, 18px);
+  z-index: 5;
+}
+
+.scene.is-village .hodor-sprite {
+  position: absolute;
+  left: clamp(50px, 9vw, 140px);
+  top: clamp(84px, 16dvh, 170px);
+  z-index: 2;
+  width: var(--village-hero-w);
+  max-width: 42%;
+  max-height: 62%;
+  filter: drop-shadow(0 28px 26px rgba(0, 0, 0, 0.4));
+}
+
+.scene.is-village .action-zone {
+  position: relative;
+  z-index: 4;
+  overflow: visible;
+}
+
+.scene.is-village .village-choices {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  pointer-events: none;
+}
+
+.scene.is-village .building {
+  position: absolute;
+  display: block;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: none;
+  cursor: pointer;
+  pointer-events: auto;
+  overflow: visible;
+}
+
+.scene.is-village .building:hover {
+  transform: translateY(-4px) scale(1.03);
+  filter: brightness(1.1) drop-shadow(0 0 16px rgba(216, 170, 61, 0.22));
+  box-shadow: none;
+}
+
+.scene.is-village .building::after,
+.scene.is-village .building-roof,
+.scene.is-village .building > strong,
+.scene.is-village .building > small {
+  display: none;
+}
+
+.scene.is-village .bank-building {
+  left: 43%;
+  top: 14%;
+  width: var(--village-bank-w);
+  aspect-ratio: 1.28;
+  background-image: url("assets/Village/banque.png");
+}
+
+.scene.is-village .tavern-building {
+  left: 66%;
+  top: 17%;
+  width: var(--village-tavern-w);
+  aspect-ratio: 1.34;
+  background-image: url("assets/Village/Taverne.png");
+}
+
+.scene.is-village .shop-building {
+  left: 43%;
+  top: 41%;
+  width: var(--village-shop-w);
+  aspect-ratio: 1.28;
+  background-image: url("assets/Village/Echoppe.png");
+}
+
+.scene.is-village .building-bank-total {
+  right: 4%;
+  bottom: 7%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 7px 13px;
+  border-color: rgba(216, 170, 61, 0.7);
+  background: rgba(10, 8, 5, 0.82);
+  font-size: clamp(0.95rem, 1.6vw, 1.18rem);
+}
+
+.scene.is-village .notice-building {
+  left: 65%;
+  top: 44%;
+  width: var(--village-board-w);
+  min-height: 0;
+  aspect-ratio: 1.45;
+  background-image: url("assets/Village/panneau-affichage.png");
+  color: var(--ink);
+  text-align: left;
+  transform-origin: center;
+}
+
+.scene.is-village .notice-building:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.scene.is-village .notice-building .village-stat-title,
+.scene.is-village .notice-building strong,
+.scene.is-village .notice-building small {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 68%;
+  margin-left: 16%;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75);
+}
+
+.scene.is-village .notice-building .village-stat-title {
+  margin-top: 13%;
+  color: rgba(244, 234, 214, 0.8);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.56rem, 0.9vw, 0.74rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.scene.is-village .notice-building strong {
+  margin-top: 3px;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.72rem, 1.08vw, 0.95rem);
+  line-height: 1.05;
+}
+
+.scene.is-village .notice-building strong:nth-of-type(2) {
+  color: var(--danger);
+}
+
+.scene.is-village .notice-building small {
+  margin-top: 7px;
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.64rem, 0.95vw, 0.84rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+@media (max-width: 900px) {
+  .scene.is-village {
+    --village-bank-w: min(29vw, 18dvh, 190px);
+    --village-shop-w: min(29vw, 18dvh, 190px);
+    --village-tavern-w: min(31vw, 19dvh, 210px);
+    --village-board-w: min(34vw, 20dvh, 230px);
+    --village-hero-w: min(43vw, 32dvh, 300px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 14%;
+    top: 16%;
+    max-width: 50%;
+    max-height: 58%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 14%;
+    top: 46%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 58%;
+    top: 47%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 18%;
+    top: 66%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 56%;
+    top: 64%;
+  }
+}
+
+@media (max-width: 520px) {
+  .scene.is-village {
+    --village-bank-w: min(33vw, 15dvh, 150px);
+    --village-shop-w: min(33vw, 15dvh, 150px);
+    --village-tavern-w: min(36vw, 15dvh, 165px);
+    --village-board-w: min(44vw, 17dvh, 190px);
+    --village-hero-w: min(52vw, 29dvh, 245px);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .scene.is-village.has-win-banner {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .scene.is-village .story-panel {
+    padding: 8px 10px;
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 26%;
+    top: 12%;
+    max-width: 58%;
+    max-height: 48%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 10%;
+    top: 43%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 55%;
+    top: 44%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 12%;
+    top: 61%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 52%;
+    top: 60%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title,
+  .scene.is-village .notice-building strong,
+  .scene.is-village .notice-building small {
+    width: 72%;
+    margin-left: 14%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title {
+    margin-top: 12%;
+    font-size: clamp(0.5rem, 2vw, 0.62rem);
+  }
+
+  .scene.is-village .notice-building strong {
+    font-size: clamp(0.62rem, 2.6vw, 0.78rem);
+  }
+
+  .scene.is-village .notice-building small {
+    margin-top: 5px;
+    font-size: clamp(0.56rem, 2.35vw, 0.7rem);
+  }
+}
+
+/* Village layout pass: the village is a playfield, not a pile of cards. */
+.scene.is-village {
+  --village-hero-w: clamp(210px, min(20vw, 40dvh), 390px);
+  --village-bank-w: clamp(160px, min(16vw, 25dvh), 270px);
+  --village-tavern-w: clamp(175px, min(17vw, 25dvh), 295px);
+  --village-shop-w: clamp(155px, min(15vw, 23dvh), 260px);
+  --village-board-w: clamp(170px, min(17vw, 25dvh), 285px);
+  --village-map-pad: clamp(10px, 1.4dvh, 18px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1dvh, 10px);
+  padding: var(--village-map-pad);
+  overflow: hidden;
+}
+
+.scene.is-village.has-win-banner {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.scene.is-village .story-panel {
+  position: relative;
+  z-index: 8;
+  min-height: 0;
+  max-height: none;
+  padding: clamp(8px, 1.25dvh, 12px) clamp(12px, 1.6dvh, 18px);
+  background: linear-gradient(90deg, rgba(20, 17, 12, 0.86), rgba(20, 17, 12, 0.62));
+}
+
+.scene.is-village .story {
+  font-size: clamp(0.72rem, 1.45dvh, 0.98rem);
+  line-height: 1.16;
+}
+
+.scene.is-village .reward-row,
+.scene.is-village .action-zone {
+  position: relative;
+  z-index: 4;
+  display: block;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+}
+
+.scene.is-village .reward-panel {
+  position: absolute;
+  left: 2%;
+  top: 3%;
+  z-index: 9;
+  width: max-content;
+  max-width: min(300px, 38%);
+}
+
+.scene.is-village .hodor-sprite {
+  position: absolute;
+  z-index: 3;
+  left: 8%;
+  top: 18%;
+  width: var(--village-hero-w);
+  max-width: 34%;
+  max-height: 58%;
+  filter: drop-shadow(0 28px 24px rgba(0, 0, 0, 0.42));
+}
+
+.scene.is-village .village-choices {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  pointer-events: none;
+}
+
+.scene.is-village .building {
+  position: absolute;
+  display: block;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: none;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.34));
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.scene.is-village .building:hover {
+  transform: translateY(-3px) scale(1.035);
+  filter: brightness(1.08) drop-shadow(0 22px 18px rgba(0, 0, 0, 0.36));
+}
+
+.scene.is-village .building::after,
+.scene.is-village .building-roof,
+.scene.is-village .building > strong,
+.scene.is-village .building > small {
+  display: none;
+}
+
+.scene.is-village .bank-building {
+  left: 42%;
+  top: 11%;
+  width: var(--village-bank-w);
+  aspect-ratio: 1.25;
+  background-image: url("assets/Village/banque.png");
+}
+
+.scene.is-village .tavern-building {
+  left: 67%;
+  top: 13%;
+  width: var(--village-tavern-w);
+  aspect-ratio: 1.28;
+  background-image: url("assets/Village/Taverne.png");
+}
+
+.scene.is-village .shop-building {
+  left: 43%;
+  top: 38%;
+  width: var(--village-shop-w);
+  aspect-ratio: 1.25;
+  background-image: url("assets/Village/Echoppe.png");
+}
+
+.scene.is-village .notice-building {
+  left: 66%;
+  top: 39%;
+  width: var(--village-board-w);
+  aspect-ratio: 1;
+  background-image: url("assets/Village/panneau-affichage.png");
+  color: var(--ink);
+  text-align: left;
+}
+
+.scene.is-village .notice-building .village-stat-title,
+.scene.is-village .notice-building strong,
+.scene.is-village .notice-building small {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 64%;
+  margin-left: 18%;
+  font-family: Arial, sans-serif;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.84);
+}
+
+.scene.is-village .notice-building .village-stat-title {
+  margin-top: 18%;
+  color: rgba(244, 234, 214, 0.78);
+  font-size: clamp(0.48rem, 0.75vw, 0.66rem);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.scene.is-village .notice-building strong {
+  margin-top: 3px;
+  font-size: clamp(0.62rem, 0.95vw, 0.86rem);
+  line-height: 1.08;
+}
+
+.scene.is-village .notice-building strong:nth-of-type(2) {
+  color: var(--danger);
+}
+
+.scene.is-village .notice-building small {
+  margin-top: 6px;
+  color: var(--gold);
+  font-size: clamp(0.56rem, 0.82vw, 0.74rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.scene.is-village .building-bank-total {
+  position: absolute;
+  right: 5%;
+  bottom: 8%;
+  display: inline-flex;
+  min-width: clamp(48px, 6vw, 72px);
+  justify-content: center;
+  padding: clamp(5px, 0.8dvh, 8px) clamp(9px, 1.2dvh, 13px);
+  border: 1px solid rgba(216, 170, 61, 0.72);
+  border-radius: 999px;
+  background: rgba(11, 9, 6, 0.82);
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.78rem, 1.45dvh, 1.05rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 900px) {
+  .scene.is-village {
+    --village-hero-w: clamp(190px, min(34vw, 32dvh), 305px);
+    --village-bank-w: clamp(118px, min(24vw, 17dvh), 175px);
+    --village-tavern-w: clamp(130px, min(27vw, 18dvh), 195px);
+    --village-shop-w: clamp(116px, min(24vw, 17dvh), 170px);
+    --village-board-w: clamp(132px, min(28vw, 18dvh), 200px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 27%;
+    top: 13%;
+    max-width: 46%;
+    max-height: 43%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 9%;
+    top: 45%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 56%;
+    top: 45%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 12%;
+    top: 63%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 54%;
+    top: 61%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title,
+  .scene.is-village .notice-building strong,
+  .scene.is-village .notice-building small {
+    width: 68%;
+    margin-left: 16%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title {
+    margin-top: 17%;
+    font-size: clamp(0.44rem, 1.65vw, 0.58rem);
+  }
+
+  .scene.is-village .notice-building strong {
+    font-size: clamp(0.54rem, 2vw, 0.72rem);
+  }
+
+  .scene.is-village .notice-building small {
+    font-size: clamp(0.5rem, 1.8vw, 0.64rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .scene.is-village {
+    --village-hero-w: clamp(170px, min(42vw, 28dvh), 240px);
+    --village-bank-w: clamp(92px, 25vw, 132px);
+    --village-tavern-w: clamp(102px, 27vw, 145px);
+    --village-shop-w: clamp(92px, 25vw, 132px);
+    --village-board-w: clamp(112px, 31vw, 158px);
+    --village-map-pad: 8px;
+  }
+
+  .scene.is-village .story {
+    font-size: clamp(0.66rem, 2.4vw, 0.82rem);
+    line-height: 1.1;
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 29%;
+    top: 11%;
+    max-width: 48%;
+    max-height: 39%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 8%;
+    top: 42%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 58%;
+    top: 42%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 10%;
+    top: 59%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 54%;
+    top: 58%;
+  }
+}
+
+@media (max-height: 700px) {
+  .scene.is-village {
+    --village-hero-w: clamp(160px, min(21vw, 31dvh), 285px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    top: 13%;
+    max-height: 40%;
+  }
+
+  .scene.is-village .bank-building,
+  .scene.is-village .tavern-building {
+    top: 42%;
+  }
+
+  .scene.is-village .shop-building,
+  .scene.is-village .notice-building {
+    top: 59%;
+  }
+}
+
+/* Floating village windows: the village stays alive underneath, the action opens in front. */
+.village-modal-backdrop[hidden],
+.stats-panel[hidden],
+.shop-panel[hidden] {
+  display: none !important;
+}
+
+.village-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 28;
+  border-radius: inherit;
+  background: rgba(7, 6, 4, 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.scene.is-village .shop-panel,
+.scene.is-village .stats-panel {
+  position: absolute;
+  z-index: 34;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(760px, calc(100% - 28px));
+  max-height: min(74dvh, 680px);
+  overflow: auto;
+  border: 1px solid rgba(216, 170, 61, 0.54);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(35, 31, 21, 0.94), rgba(18, 15, 10, 0.92)),
+    rgba(24, 22, 17, 0.94);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.62);
+}
+
+.scene.is-village .shop-panel {
+  padding: clamp(14px, 2dvh, 20px);
+}
+
+.scene.is-village .shop-header,
+.scene.is-village .stats-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.scene.is-village .shop-header span,
+.scene.is-village .stats-panel-header span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.scene.is-village .shop-header strong,
+.scene.is-village .stats-panel-header strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: clamp(1.15rem, 2.1dvh, 1.55rem);
+  line-height: 1.05;
+}
+
+.scene.is-village .shop-header button,
+.scene.is-village .stats-panel-header button {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  border: 1px solid rgba(216, 170, 61, 0.48);
+  border-radius: 50%;
+  background: rgba(79, 48, 31, 0.82);
+  padding: 0;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.scene.is-village .upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.scene.is-village .upgrade-card {
+  border-color: rgba(244, 234, 214, 0.17);
+  background: rgba(48, 39, 25, 0.78);
+}
+
+.stats-panel {
+  padding: clamp(16px, 2.4dvh, 22px);
+  font-family: Arial, sans-serif;
+}
+
+.stats-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stats-panel-grid article {
+  min-height: 104px;
+  border: 1px solid rgba(244, 234, 214, 0.14);
+  border-radius: 8px;
+  background: rgba(12, 10, 7, 0.38);
+  padding: 14px;
+}
+
+.stats-panel-grid article span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.stats-panel-grid article strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--ink);
+  font-size: clamp(1.65rem, 4.2dvh, 2.8rem);
+  line-height: 0.95;
+}
+
+.stats-panel-grid article:nth-child(2) strong {
+  color: var(--danger);
+}
+
+.stats-panel-grid article:nth-child(3) strong {
+  color: var(--gold);
+}
+
+.stats-panel-grid .stats-panel-dignity {
+  grid-column: 1 / -1;
+  min-height: 92px;
+}
+
+.stats-panel-grid .stats-panel-dignity strong {
+  color: var(--gold);
+  font-size: clamp(1.1rem, 2.6dvh, 1.7rem);
+  line-height: 1.08;
+}
+
+@media (max-width: 720px) {
+  .scene.is-village .shop-panel,
+  .scene.is-village .stats-panel {
+    width: calc(100% - 18px);
+    max-height: 78dvh;
+  }
+
+  .scene.is-village .upgrade-grid,
+  .stats-panel-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-panel-grid article {
+    min-height: 80px;
+  }
+}
+
+/* Village responsive stabilization: keep the illustrated buttons reachable. */
+.scene.is-village {
+  --village-hero-w: clamp(185px, min(23vw, 36dvh), 360px);
+  --village-bank-w: clamp(150px, min(16vw, 23dvh), 250px);
+  --village-tavern-w: clamp(165px, min(17vw, 24dvh), 275px);
+  --village-shop-w: clamp(145px, min(15vw, 22dvh), 240px);
+  --village-board-w: clamp(160px, min(17vw, 24dvh), 265px);
+}
+
+.scene.is-village .action-zone {
+  min-height: 0;
+  border-top: 0;
+  background: transparent;
+}
+
+.scene.is-village .hodor-sprite {
+  left: clamp(14px, 6%, 76px);
+  top: clamp(54px, 15%, 118px);
+  max-width: 32%;
+  max-height: 54%;
+  pointer-events: none;
+}
+
+.scene.is-village .building {
+  touch-action: manipulation;
+}
+
+.scene.is-village .bank-building {
+  left: clamp(32%, 39%, 42%);
+  top: 10%;
+}
+
+.scene.is-village .tavern-building {
+  left: clamp(62%, 66%, 70%);
+  top: 12%;
+}
+
+.scene.is-village .shop-building {
+  left: clamp(34%, 42%, 45%);
+  top: 42%;
+}
+
+.scene.is-village .notice-building {
+  left: clamp(61%, 66%, 70%);
+  top: 42%;
+}
+
+.scene.is-village .notice-building .village-stat-title,
+.scene.is-village .notice-building strong,
+.scene.is-village .notice-building small {
+  overflow-wrap: anywhere;
+}
+
+.scene.is-village .notice-building strong {
+  font-size: clamp(0.58rem, 0.86vw, 0.8rem);
+}
+
+.scene.is-village .notice-building small {
+  font-size: clamp(0.52rem, 0.76vw, 0.7rem);
+}
+
+.scene.is-village .shop-panel,
+.scene.is-village .stats-panel {
+  top: auto;
+  bottom: clamp(14px, 2dvh, 24px);
+  transform: none;
+  max-height: min(70dvh, 620px);
+  scrollbar-gutter: stable;
+}
+
+.scene.is-village .shop-panel {
+  left: clamp(260px, 37%, 470px);
+  width: min(720px, calc(63% - 28px));
+}
+
+.scene.is-village .stats-panel {
+  left: auto;
+  right: clamp(14px, 3%, 34px);
+  width: min(500px, calc(44% - 22px));
+}
+
+.scene.is-village .shop-panel::before,
+.scene.is-village .stats-panel::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 18px;
+  height: 18px;
+  border-right: 1px solid rgba(216, 170, 61, 0.54);
+  border-bottom: 1px solid rgba(216, 170, 61, 0.54);
+  background: rgba(24, 22, 17, 0.96);
+  transform: rotate(45deg);
+}
+
+.scene.is-village .shop-panel::before {
+  left: clamp(54px, 16%, 130px);
+}
+
+.scene.is-village .stats-panel::before {
+  right: clamp(54px, 20%, 120px);
+}
+
+.scene.is-village .shop-header,
+.scene.is-village .stats-panel-header {
+  min-width: 0;
+}
+
+.scene.is-village .shop-header > div,
+.scene.is-village .stats-panel-header > div {
+  min-width: 0;
+}
+
+.scene.is-village .shop-header strong,
+.scene.is-village .stats-panel-header strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .scene.is-village {
+    --village-hero-w: clamp(172px, min(35vw, 30dvh), 282px);
+    --village-bank-w: clamp(116px, min(25vw, 17dvh), 170px);
+    --village-tavern-w: clamp(126px, min(27vw, 18dvh), 188px);
+    --village-shop-w: clamp(114px, min(24vw, 17dvh), 166px);
+    --village-board-w: clamp(128px, min(29vw, 18dvh), 196px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 28%;
+    top: 10%;
+    max-width: 42%;
+    max-height: 38%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 8%;
+    top: 43%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 57%;
+    top: 43%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 10%;
+    top: 61%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 54%;
+    top: 60%;
+  }
+
+  .scene.is-village .shop-panel,
+  .scene.is-village .stats-panel {
+    left: 50%;
+    right: auto;
+    bottom: clamp(10px, 1.8dvh, 18px);
+    width: min(620px, calc(100% - 20px));
+    max-height: min(72dvh, 620px);
+    transform: translateX(-50%);
+  }
+
+  .scene.is-village .shop-panel::before {
+    left: 22%;
+  }
+
+  .scene.is-village .stats-panel::before {
+    left: auto;
+    right: 20%;
+  }
+}
+
+@media (max-width: 560px) {
+  .game-shell {
+    width: calc(100% - 12px);
+    padding: 6px 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: minmax(68px, 0.8fr) minmax(92px, 1fr) minmax(44px, 0.48fr) minmax(58px, 0.58fr) minmax(74px, 0.7fr);
+    gap: 4px;
+    margin-bottom: 5px;
+  }
+
+  .stat {
+    min-height: 46px;
+    padding: 6px;
+  }
+
+  .stat-purse > div strong,
+  .stat strong,
+  .stat-place strong {
+    font-size: clamp(0.78rem, 3.4vw, 1.05rem);
+  }
+
+  .scene.is-village {
+    --village-hero-w: clamp(150px, min(43vw, 25dvh), 210px);
+    --village-bank-w: clamp(86px, 24vw, 122px);
+    --village-tavern-w: clamp(96px, 26vw, 136px);
+    --village-shop-w: clamp(86px, 24vw, 122px);
+    --village-board-w: clamp(104px, 30vw, 146px);
+    --village-map-pad: 6px;
+  }
+
+  .scene.is-village .story-panel {
+    padding: 7px 10px;
+  }
+
+  .scene.is-village .story {
+    font-size: clamp(0.62rem, 2.15vw, 0.78rem);
+    line-height: 1.08;
+  }
+
+  .scene.is-village .hodor-sprite {
+    left: 28%;
+    top: 8%;
+    max-width: 43%;
+    max-height: 34%;
+  }
+
+  .scene.is-village .bank-building {
+    left: 7%;
+    top: 40%;
+  }
+
+  .scene.is-village .tavern-building {
+    left: 58%;
+    top: 40%;
+  }
+
+  .scene.is-village .shop-building {
+    left: 9%;
+    top: 57%;
+  }
+
+  .scene.is-village .notice-building {
+    left: 53%;
+    top: 56%;
+  }
+
+  .scene.is-village .notice-building .village-stat-title {
+    font-size: clamp(0.38rem, 1.75vw, 0.5rem);
+  }
+
+  .scene.is-village .notice-building strong {
+    margin-top: 2px;
+    font-size: clamp(0.46rem, 2vw, 0.62rem);
+    line-height: 1.02;
+  }
+
+  .scene.is-village .notice-building small {
+    margin-top: 3px;
+    font-size: clamp(0.42rem, 1.8vw, 0.56rem);
+    line-height: 1.02;
+  }
+
+  .scene.is-village .building-bank-total {
+    right: 2%;
+    bottom: 4%;
+    min-width: 42px;
+    padding: 4px 7px;
+    font-size: clamp(0.56rem, 2.2vw, 0.72rem);
+  }
+
+  .scene.is-village .shop-panel,
+  .scene.is-village .stats-panel {
+    bottom: 6px;
+    width: calc(100% - 12px);
+    max-height: min(76dvh, 520px);
+    border-radius: 8px;
+  }
+
+  .scene.is-village .shop-panel {
+    padding: 11px;
+  }
+
+  .stats-panel {
+    padding: 12px;
+  }
+
+  .scene.is-village .shop-panel::before,
+  .scene.is-village .stats-panel::before {
+    display: none;
+  }
+
+  .scene.is-village .shop-header,
+  .scene.is-village .stats-panel-header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .scene.is-village .shop-header strong,
+  .scene.is-village .stats-panel-header strong {
+    font-size: clamp(0.92rem, 4.2vw, 1.12rem);
+  }
+
+  .scene.is-village .shop-header button,
+  .scene.is-village .stats-panel-header button {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 380px), (max-height: 620px) {
+  .scene.is-village {
+    --village-hero-w: clamp(132px, min(39vw, 23dvh), 188px);
+    --village-bank-w: clamp(78px, 22vw, 108px);
+    --village-tavern-w: clamp(88px, 24vw, 120px);
+    --village-shop-w: clamp(78px, 22vw, 108px);
+    --village-board-w: clamp(94px, 27vw, 130px);
+  }
+
+  .scene.is-village .hodor-sprite {
+    top: 7%;
+    max-height: 31%;
+  }
+
+  .scene.is-village .bank-building,
+  .scene.is-village .tavern-building {
+    top: 38%;
+  }
+
+  .scene.is-village .shop-building,
+  .scene.is-village .notice-building {
+    top: 55%;
+  }
+}

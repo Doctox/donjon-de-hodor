@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Le Donjon de Hodor</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="topbar" aria-label="Etat de la partie">
+        <div>
+          <div class="score-strip" aria-label="Progression permanente">
+            <div class="bank-score bank-total" id="bank-score">
+              <span>Banque</span>
+              <strong><span id="bank-gold">0</span> PO</strong>
+            </div>
+          </div>
+        </div>
+        <div class="debug-menu">
+          <button class="ghost-button debug-toggle" id="debug-toggle" type="button" aria-label="Debug" aria-expanded="false">i</button>
+          <div class="debug-panel" id="debug-panel" hidden>
+            <button id="god-mode" type="button" aria-pressed="false">God mode : OFF</button>
+            <button id="debug-go-village" type="button">Aller au village</button>
+            <details class="debug-section">
+              <summary>Banque</summary>
+              <label class="debug-field">
+                <span>PO banque</span>
+                <input id="debug-bank-amount" type="number" min="0" step="1" value="100">
+              </label>
+              <button id="debug-add-bank" type="button">Ajouter PO</button>
+              <button id="reset-save" type="button">Vider la banque</button>
+            </details>
+            <details class="debug-section debug-combat-menu">
+              <summary>Combat</summary>
+              <button type="button" data-debug-combat="rat">Rat</button>
+              <button type="button" data-debug-combat="skeleton">Squelette</button>
+              <button type="button" data-debug-combat="guard">Guard</button>
+            </details>
+            <details class="debug-section debug-stuff-menu">
+              <summary>Stuff</summary>
+              <button type="button" data-debug-stuff="Casque Trop Petit">Casque Trop Petit</button>
+              <button type="button" data-debug-stuff="Hache Emoussee">Hache Emoussee</button>
+              <button type="button" data-debug-stuff="Sandales de Panique">Sandales de Panique</button>
+              <button type="button" data-debug-stuff="Medaillon du Presque-Heros">Medaillon du Presque-Heros</button>
+              <button type="button" data-debug-stuff="Slip de Guerre">Slip de Guerre</button>
+              <button type="button" data-debug-stuff="Boulet au Pied">Boulet au Pied</button>
+              <button type="button" data-debug-stuff="Chaussette Porte-Bonheur">Chaussette Porte-Bonheur</button>
+              <button type="button" data-debug-stuff="Caillou Affectif">Caillou Affectif</button>
+              <button type="button" data-debug-stuff="Cape Trop Longue">Cape Trop Longue</button>
+              <button type="button" data-debug-stuff="Gants Collants">Gants Collants</button>
+              <button type="button" id="debug-clear-stuff">Vider stuff</button>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <div class="account-menu">
+        <button class="account-toggle" id="account-toggle" type="button" aria-label="Parametres du compte" aria-expanded="false">&#9881;</button>
+        <div class="account-popover" id="account-popover" role="dialog" aria-label="Parametres du compte" hidden>
+          <div class="account-card">
+            <div class="account-card-head">
+              <div>
+                <strong>Parametres</strong>
+              </div>
+              <button class="inventory-close" id="account-close" type="button" aria-label="Fermer les parametres">x</button>
+            </div>
+            <p class="account-line" id="account-line">Connecte : Visiteur</p>
+            <button class="account-open-login" id="account-open-login" type="button">Se connecter</button>
+            <button class="account-open-login" id="account-settings-logout" type="button" hidden>Deconnexion</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="stats-grid">
+        <article class="stat stat-purse">
+          <div class="purse-visual" id="purse-visual" aria-hidden="true"></div>
+          <div>
+            <strong><span id="carried-gold">0</span> PO</strong>
+          </div>
+        </article>
+        <article class="stat stat-life">
+          <div class="heart-row" id="heart-row" aria-label="Vie"></div>
+        </article>
+        <article class="stat-inventory" aria-label="Inventaire">
+          <button class="inventory-toggle" id="inventory-toggle" type="button" aria-expanded="false" aria-controls="inventory-popover">
+            <span>Inventaire</span>
+          </button>
+          <div class="inventory-popover" id="inventory-popover" role="dialog" aria-label="Inventaire de Hodor" hidden>
+            <div class="inventory-card">
+              <div class="inventory-card-head">
+                <div>
+                  <p class="inventory-eyebrow">Sac de Hodor</p>
+                  <strong>Inventaire</strong>
+                </div>
+                <button class="inventory-close" id="inventory-close" type="button" aria-label="Fermer l'inventaire">x</button>
+              </div>
+              <div class="inventory-list" id="inventory"></div>
+              <div class="upgrade-summary" id="upgrade-summary"></div>
+            </div>
+          </div>
+        </article>
+        <article class="stat stat-loss bank-score loss-score" id="loss-score">
+          <span>Essai</span>
+          <strong id="loss-count">0</strong>
+        </article>
+        <article class="stat stat-place">
+          <span id="place-label">Etage</span>
+          <strong id="floor">20</strong>
+        </article>
+      </section>
+
+      <section class="scene" id="scene">
+        <div class="account-panel" id="account-panel">
+          <div class="account-header">
+            <p class="account-status" id="account-status">Sauvegarde locale</p>
+            <button class="account-visitor" id="auth-visitor" type="button">Visiteur</button>
+          </div>
+          <label class="account-field">
+            <span>Email</span>
+            <input id="auth-email" type="email" autocomplete="email" placeholder="hodor@mail.fr">
+          </label>
+          <label class="account-field">
+            <span>Mot de passe</span>
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="8 caracteres minimum">
+          </label>
+          <div class="account-actions">
+            <button id="auth-login" type="button">Connexion</button>
+            <button id="auth-signup" type="button">Creer compte</button>
+            <button id="auth-logout" type="button" hidden>Deconnexion</button>
+          </div>
+          <small class="account-help" id="account-help">Compte joueur : sauvegarde cloud. Compte admin : menu debug.</small>
+        </div>
+
+        <div class="ko-banner" id="ko-banner" hidden>
+          <strong>Perdus</strong>
+          <span id="ko-taunt">Hodor retourne aux geoles sans passer par la dignite.</span>
+        </div>
+
+        <div class="win-banner" id="win-banner" hidden>
+          <strong>Gagner</strong>
+          <span id="win-taunt">Hodor sort vivant. Le village envisage une statue minuscule.</span>
+        </div>
+
+        <div class="story-panel">
+          <p class="location" id="location">Dans les geoles</p>
+          <p class="story" id="story">
+            Hodor entre dans le donjon, se prend les pieds dans le tapis et hurle de douleur en tombant.
+            Il se fait reperer, tabasser, puis se reveille tout en haut du donjon.
+          </p>
+        </div>
+
+        <div class="reward-row" id="reward-row">
+          <div class="reward-panel" id="reward-panel" hidden>
+            <p class="reward-label">Effet</p>
+            <p class="reward-text" id="reward-text"></p>
+          </div>
+          <div class="hodor-sprite" aria-hidden="true"></div>
+        </div>
+
+        <div class="action-zone" aria-label="Actions disponibles">
+          <div class="doors" id="doors">
+            <button class="door" type="button" data-door="0">
+              <span class="door-number">I</span>
+              <span class="door-knob"></span>
+              <span class="door-hint"></span>
+            </button>
+            <button class="door" type="button" data-door="1">
+              <span class="door-number">II</span>
+              <span class="door-knob"></span>
+              <span class="door-hint"></span>
+            </button>
+            <button class="door" type="button" data-door="2">
+              <span class="door-number">III</span>
+              <span class="door-knob"></span>
+              <span class="door-hint"></span>
+            </button>
+          </div>
+
+          <div class="combat-choices" id="combat-choices" hidden>
+            <div class="monster-target rat-target" id="monster-target" hidden aria-label="Rat commandant">
+              <button class="monster-part monster-head" type="button" data-strike="head" aria-label="Taper la tete"></button>
+              <button class="monster-part monster-torso" type="button" data-strike="torso" aria-label="Taper le corps"></button>
+              <button class="monster-part monster-legs" type="button" data-strike="legs" aria-label="Taper les jambes"></button>
+            </div>
+            <button class="combat-choice" type="button" data-strike="head">
+              <span>Taper la tete</span>
+              <small>Gros pari, grosse betise possible.</small>
+            </button>
+            <button class="combat-choice" type="button" data-strike="legs">
+              <span>Taper les jambes</span>
+              <small>Moins glorieux, souvent moins mortel.</small>
+            </button>
+            <button class="combat-choice" type="button" data-strike="torso">
+              <span>Taper le torse</span>
+              <small>Le choix moyen d'un cerveau moyen.</small>
+            </button>
+          </div>
+
+          <div class="village-choices" id="village-choices" hidden>
+            <button class="building bank-building" id="bank-building" type="button">
+              <span class="building-roof"></span>
+              <span class="building-bank-total"><span id="bank-building-gold">0</span> PO</span>
+              <strong>Banque</strong>
+              <small>Mettre les pieces a l'abri.</small>
+            </button>
+            <button class="building tavern-building" id="tavern-building" type="button">
+              <span class="building-roof"></span>
+              <strong>Taverne</strong>
+              <small>Boire, oublier, recommencer.</small>
+            </button>
+            <button class="building shop-building" id="shop-building" type="button">
+              <span class="building-roof"></span>
+              <strong>Echoppe Douteuse</strong>
+              <small>Acheter du progres vaguement legal.</small>
+            </button>
+            <button class="building notice-building village-stat-card" id="stats-building" type="button" aria-label="Statistiques du village">
+              <span class="village-stat-title">Statistiques</span>
+              <strong><span id="village-win-count">0</span> sorties miraculeuses</strong>
+              <strong><span id="village-loss-count">0</span> humiliations</strong>
+              <strong><span id="village-bank-count">0</span> PO planquees</strong>
+              <small id="village-shame">Dignite estimee : introuvable</small>
+            </button>
+          </div>
+
+          <div class="village-modal-backdrop" id="village-modal-backdrop" hidden></div>
+
+          <div class="shop-panel" id="shop-panel" hidden>
+            <div class="shop-header">
+              <div>
+                <span>Echoppe Douteuse</span>
+                <strong>Ameliorations permanentes, resultats discutables</strong>
+              </div>
+              <button id="close-shop" type="button" aria-label="Fermer l'echoppe">x</button>
+            </div>
+            <div class="upgrade-grid" id="upgrade-grid"></div>
+          </div>
+
+          <div class="stats-panel" id="stats-panel" hidden>
+            <div class="stats-panel-header">
+              <div>
+                <span>Panneau d'affichage</span>
+                <strong>Statistiques</strong>
+              </div>
+              <button id="close-stats" type="button" aria-label="Fermer les statistiques">x</button>
+            </div>
+            <div class="stats-panel-grid">
+              <article>
+                <span>Sorties miraculeuses</span>
+                <strong id="stats-modal-wins">0</strong>
+              </article>
+              <article>
+                <span>Humiliations</span>
+                <strong id="stats-modal-losses">0</strong>
+              </article>
+              <article>
+                <span>PO planquees</span>
+                <strong id="stats-modal-bank">0</strong>
+              </article>
+              <article class="stats-panel-dignity">
+                <span>Dignite estimee</span>
+                <strong id="stats-modal-dignity">Introuvable</strong>
+              </article>
+            </div>
+          </div>
+
+          <div class="death-choices" id="death-choices" hidden>
+            <button class="restart-card" id="restart-action" type="button">
+              <span id="restart-label">Sortir de sa cellule</span>
+              <small id="restart-help">La porte grince. Hodor appelle ca de la discretion.</small>
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <script src="items.js"></script>
+    <script src="monsters.js"></script>
+    <script src="events.js"></script>
+    <script src="upgrades.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
