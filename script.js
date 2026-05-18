@@ -298,10 +298,6 @@ function closeAccountPanel() {
 function openSignupPanel() {
   const overlay = $("account-signup-overlay");
   if (!overlay) return;
-  const loginId = $("auth-login-id")?.value.trim() || "";
-  if (loginId && !loginId.includes("@") && !$("signup-alias")?.value) {
-    $("signup-alias").value = normalizeLoginAlias(loginId);
-  }
   overlay.hidden = false;
   $("signup-alias")?.focus();
 }
@@ -580,8 +576,11 @@ async function signOutAccount() {
   cloudState.loaded = false;
   resetRunCarryover();
   updateAccountUi();
-  render();
   closeAccountPopover();
+  openAccountPanel();
+  setAccountStatus("Deconnecte", "neutral");
+  setAccountHelp("Reconnecte-toi, ou reste visiteur comme un heros fiscalement discret.");
+  render();
 }
 
 async function loadCloudProfileAndSave() {
