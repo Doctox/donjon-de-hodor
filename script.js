@@ -72,6 +72,8 @@ const inventoryIconPaths = {
   "Boulet au Pied": "assets/Hodor V0.1/Stuff/Boulet/inv-Boulet.png",
   "Caillou Affectif": "assets/Hodor V0.1/Stuff/Cailloux/inv-cailloux.png",
   "Casque Trop Petit": "assets/Hodor V0.1/Stuff/Casque/inv-casque.png",
+  "Cape Trop Longue": "assets/Hodor V0.1/Stuff/Cape/inv-cape-casse.png",
+  "Chaussette Porte-Bonheur": "assets/Hodor V0.1/Stuff/Inventaire/inv-chaussette-porte-bonheur.png",
   "Hache Emoussee": "assets/Hodor V0.1/Stuff/Hache/inv-hache.png",
   "Medaillon du Presque-Heros": "assets/Hodor V0.1/Stuff/Medaillon du Presque-Heros/inv-medaillon.png",
   "Sandales de Panique": "assets/Hodor V0.1/Stuff/Sandales de Panique/inv-sandale.png",
@@ -83,6 +85,7 @@ const HODOR_POSE_FILES = {
   idle: "Idle",
   marche: "marche",
   fuite: "fuite",
+  folie: "folie",
   question: "question",
   degats: "degats",
   "attaque-1": "attaque-1",
@@ -107,6 +110,7 @@ const HODOR_STUFF_LAYERS = [
   { item: "Medaillon du Presque-Heros", folder: "Medaillon du Presque-Heros", suffix: "medaillon" },
   { item: "Casque Trop Petit", folder: "Casque", suffix: "casque" },
   { item: "Hache Emoussee", folder: "Hache", suffix: "hache" },
+  { item: "Cape Trop Longue", folder: "Cape", suffix: "cape" },
 ];
 const HODOR_WALK_STUFF_FRAME_PATHS = {
   "Slip de Guerre": [
@@ -135,6 +139,7 @@ const HODOR_WALK_STUFF_FRAME_PATHS = {
   ],
 };
 let hodorWalkAnimationTimer = null;
+let dungeonEffectPoseTimer = null;
 
 document.addEventListener("click", (event) => {
   const door = event.target.closest(".door");
@@ -148,6 +153,17 @@ document.addEventListener("click", (event) => {
     resolveCombat(strike.dataset.strike);
     return;
   }
+});
+
+document.addEventListener("click", dismissWinBannerOnFirstClick, true);
+
+document.addEventListener("mousemove", previewDungeonDoorWalkFromPointer);
+
+document.querySelectorAll(".door").forEach((door) => {
+  door.addEventListener("pointerenter", previewDungeonDoorWalk);
+  door.addEventListener("pointerleave", stopDungeonDoorWalkPreview);
+  door.addEventListener("mouseover", previewDungeonDoorWalk);
+  door.addEventListener("mouseout", stopDungeonDoorWalkPreview);
 });
 
 addClick("bank-building", depositGold);
@@ -176,6 +192,11 @@ addClick("auth-register", signUpAccount);
 addClick("auth-signup-close", closeSignupPanel);
 addClick("auth-logout", signOutAccount);
 addClick("auth-visitor", closeAccountPanel);
+addEnterSubmit("auth-login-id", signInAccount);
+addEnterSubmit("auth-password", signInAccount);
+addEnterSubmit("signup-alias", signUpAccount);
+addEnterSubmit("signup-email", signUpAccount);
+addEnterSubmit("signup-password", signUpAccount);
 
 document.querySelectorAll("[data-debug-combat]").forEach((button) => {
   button.addEventListener("click", () => debugStartCombat(button.dataset.debugCombat));
@@ -348,7 +369,7 @@ function setAccountHelp(message) {
 function updateAccountUi() {
   const connected = Boolean(cloudState.user);
   const email = cloudState.user?.email || "";
-  const accountName = cloudState.profile?.display_name || email || "Visiteur";
+  const accountName = cloudState.profile?.alias || cloudState.profile?.display_name || email || "Visiteur";
   $("auth-login")?.toggleAttribute("hidden", connected);
   $("auth-signup")?.toggleAttribute("hidden", connected);
   $("auth-visitor")?.toggleAttribute("hidden", connected);
@@ -588,8 +609,9 @@ async function loadCloudProfileAndSave() {
   cloudState.applying = true;
 
   try {
-    const [{ data: profile, error: profileError }, { data: save, error: saveError }] = await Promise.all([
+    const [{ data: profile, error: profileError }, { data: alias, error: aliasError }, { data: save, error: saveError }] = await Promise.all([
       supabaseClient.from("profiles").select("role, display_name").eq("user_id", cloudState.user.id).maybeSingle(),
+      supabaseClient.rpc("current_login_alias"),
       supabaseClient.from("player_saves").select("bank_gold,total_gold,wins,losses,upgrades").eq("user_id", cloudState.user.id).maybeSingle(),
     ]);
 
@@ -598,7 +620,11 @@ async function loadCloudProfileAndSave() {
       setAccountHelp(authMessage(profileError.message));
     }
 
-    cloudState.profile = profile || { role: "player" };
+    if (aliasError) {
+      setAccountHelp(authMessage(aliasError.message));
+    }
+
+    cloudState.profile = { ...(profile || { role: "player" }), alias: alias || "" };
 
     if (saveError) {
       setAccountStatus("Sauvegarde indisponible", "bad");
@@ -683,6 +709,7 @@ function sendReturningPlayerToVillage() {
 }
 
 function resetRunCarryover() {
+  clearDungeonEffectPoseTimer();
   state.carriedGold = 0;
   state.inventory = [];
   state.combat = null;
@@ -754,7 +781,9 @@ function hodorPoseFromStory(text, tone) {
   const itemWasLost = hasEffectItem && /perdu|perdue|pulverise|pulverisee|confisque|confisquee|se fend|se dechire|explose|reste sur place|partent ensuite|malediction|refuse la mort|annule la catastrophe/.test(content);
   const itemWasDuplicate = hasEffectItem && /deja|dommage|ricane|refuse le cumul|personne ne devrait/.test(content);
   if (/\+\d+\s*po|banque\s*\+\d+\s*po/.test(effectText)) return "victory";
-  if (/-\d+\s*po|bourse perdue/.test(effectText)) return "releve";
+  if (/-\d+\s*po|bourse perdue/.test(effectText)) return "ko";
+  if (!effectText) return "folie";
+  if (/miroir magique|avenir.*court.*flou.*douloureux/.test(content)) return "folie";
   if (itemWasLost) return "ko";
   if (itemWasDuplicate) return "question";
   if (/\+\d+\s*coeur|caillou affectif|hache emoussee|casque trop petit|sandales de panique|medaillon|chaussette|gants|slip|cape/.test(effectText)) return "victory";
@@ -919,7 +948,7 @@ function itemAliasesFor(item) {
     "Casque Trop Petit": ["casque trop petit", "le casque trop petit"],
     "Slip de Guerre": ["slip de guerre", "le slip de guerre"],
     "Medaillon du Presque-Heros": ["medaillon", "medaillon du presque-heros", "un medaillon du presque-heros"],
-    "Sandales de Panique": ["sandales de panique", "des sandales de panique"],
+    "Sandales de Panique": ["ces sandales", "des sandales de panique", "sandales de panique", "sandales"],
     "Hache Emoussee": ["hache emoussee", "une hache emoussee"],
     "Boulet au Pied": ["boulet au pied", "un boulet au pied"],
     "Chaussette Porte-Bonheur": ["chaussette porte-bonheur", "une chaussette porte-bonheur"],
@@ -1053,6 +1082,24 @@ function addClick(id, handler) {
   }
 }
 
+function dismissWinBannerOnFirstClick(event) {
+  if (!state.showWinBanner || state.screen !== "village") return;
+  state.showWinBanner = false;
+  event.preventDefault();
+  event.stopPropagation();
+  render();
+}
+
+function addEnterSubmit(id, handler) {
+  const element = $(id);
+  if (!element) return;
+  element.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    handler();
+  });
+}
+
 function upgradeLevel(id) {
   return state.upgrades[id] || 0;
 }
@@ -1132,12 +1179,42 @@ function buyUpgrade(id) {
 function chooseDoor(door) {
   if (state.runEnded || state.screen !== "dungeon" || state.inputLocked) return;
 
+  clearDungeonEffectPoseTimer();
+  stopDungeonDoorWalkPreview();
   flashDoor(door);
   state.inputLocked = true;
   setStory("Hodor pose la main sur la poignee. Le donjon retient son souffle, probablement pour economiser l'air.");
   render();
 
   window.setTimeout(() => resolveDoorChoice(), 2000);
+}
+
+function previewDungeonDoorWalk(event) {
+  if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer || event.currentTarget.disabled) return;
+  state.hodorPose = "walk";
+  renderHodor();
+}
+
+function previewDungeonDoorWalkFromPointer(event) {
+  if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer) return;
+  const door = event.target.closest(".door");
+  if (door && !door.disabled) {
+    if (state.hodorPose !== "walk") {
+      state.hodorPose = "walk";
+      renderHodor();
+    }
+    return;
+  }
+  if (state.hodorPose === "walk") {
+    state.hodorPose = "question";
+    renderHodor();
+  }
+}
+
+function stopDungeonDoorWalkPreview() {
+  if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer) return;
+  state.hodorPose = "question";
+  renderHodor();
 }
 
 function resolveDoorChoice() {
@@ -1147,6 +1224,7 @@ function resolveDoorChoice() {
     state.inputLocked = false;
     resetDoorEffects();
     render();
+    holdDungeonEffectPoseBriefly();
     return;
   }
 
@@ -1163,6 +1241,26 @@ function resolveDoorChoice() {
   state.inputLocked = false;
   resetDoorEffects();
   render();
+  holdDungeonEffectPoseBriefly();
+}
+
+function clearDungeonEffectPoseTimer() {
+  if (!dungeonEffectPoseTimer) return;
+  window.clearTimeout(dungeonEffectPoseTimer);
+  dungeonEffectPoseTimer = null;
+}
+
+function holdDungeonEffectPoseBriefly() {
+  clearDungeonEffectPoseTimer();
+  if (state.screen !== "dungeon" || state.inputLocked) return;
+
+  const effectPose = state.hodorPose || "question";
+  dungeonEffectPoseTimer = window.setTimeout(() => {
+    dungeonEffectPoseTimer = null;
+    if (state.screen !== "dungeon" || state.inputLocked || state.hodorPose !== effectPose) return;
+    state.hodorPose = "question";
+    renderHodor();
+  }, 3000);
 }
 
 function finalDoorOutcome() {
@@ -1629,7 +1727,7 @@ function startRun() {
   applyRunUpgrades();
   prepareDoorHints();
   setStory("Hodor force la porte des geoles avec beaucoup d'optimisme et tres peu de technique. Trois portes l'attendent. Bonne chance.");
-  state.hodorPose = "fuite";
+  state.hodorPose = "question";
   render();
 }
 
@@ -2155,6 +2253,10 @@ function hodorPoseForScreen() {
   if (state.screen === "combat") return state.hodorPose === "combat-2" || state.hodorPose === "combat-3" ? state.hodorPose : "combat";
   if (state.screen === "shop") return "walk";
   if (state.screen === "village") return state.showWinBanner ? "victory" : "question";
+  if (state.screen === "dungeon") {
+    if (state.inputLocked || state.hodorPose === "walk") return "walk";
+    return state.hodorPose && state.hodorPose !== "idle" ? state.hodorPose : "question";
+  }
   if (state.screen === "cell") return "idle";
   return state.hodorPose || "idle";
 }
@@ -2183,6 +2285,10 @@ function hodorBaseLayerUrl(cleanPose, walkFrameIndex) {
     return HODOR_WALK_FRAME_PATHS[walkFrameIndex];
   }
 
+  if (cleanPose === "folie") {
+    return `${HODOR_BASE_PATH}/Corps/folie.png`;
+  }
+
   const poseFile = HODOR_POSE_FILES[cleanPose] || HODOR_POSE_FILES.idle;
   return `${HODOR_BASE_PATH}/Corps/${poseFile}.png`;
 }
@@ -2193,7 +2299,8 @@ function hodorStuffLayerUrl(layer, cleanPose, walkFrameIndex) {
     return walkFramePaths[walkFrameIndex];
   }
 
-  const poseFile = layer.poseFiles && layer.poseFiles[cleanPose] ? layer.poseFiles[cleanPose] : `${cleanPose}-${layer.suffix}`;
+  const stuffPose = cleanPose === "folie" ? "question" : cleanPose;
+  const poseFile = layer.poseFiles && layer.poseFiles[stuffPose] ? layer.poseFiles[stuffPose] : `${stuffPose}-${layer.suffix}`;
   return `${HODOR_BASE_PATH}/Stuff/${layer.folder}/${poseFile}.png`;
 }
 
@@ -2220,6 +2327,7 @@ function hodorV01PoseName(pose) {
     idle: "idle",
     walk: "marche",
     fuite: "fuite",
+    folie: "folie",
     question: "question",
     releve: "question",
     victory: "victoire",
