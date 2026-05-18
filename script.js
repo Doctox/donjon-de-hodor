@@ -74,6 +74,7 @@ const inventoryIconPaths = {
   "Casque Trop Petit": "assets/Hodor V0.1/Stuff/Casque/inv-casque.png",
   "Cape Trop Longue": "assets/Hodor V0.1/Stuff/Cape/inv-cape-casse.png",
   "Chaussette Porte-Bonheur": "assets/Hodor V0.1/Stuff/Inventaire/inv-chaussette-porte-bonheur.png",
+  "Gants Collants": "assets/Hodor V0.1/Stuff/Gant/inv-gant-point-interieur.png",
   "Hache Emoussee": "assets/Hodor V0.1/Stuff/Hache/inv-hache.png",
   "Medaillon du Presque-Heros": "assets/Hodor V0.1/Stuff/Medaillon du Presque-Heros/inv-medaillon.png",
   "Sandales de Panique": "assets/Hodor V0.1/Stuff/Sandales de Panique/inv-sandale.png",
@@ -109,6 +110,7 @@ const HODOR_STUFF_LAYERS = [
   { item: "Caillou Affectif", folder: "Cailloux", suffix: "cailloux" },
   { item: "Medaillon du Presque-Heros", folder: "Medaillon du Presque-Heros", suffix: "medaillon" },
   { item: "Casque Trop Petit", folder: "Casque", suffix: "casque" },
+  { item: "Gants Collants", folder: "Gant", suffix: "gant" },
   { item: "Hache Emoussee", folder: "Hache", suffix: "hache" },
   { item: "Cape Trop Longue", folder: "Cape", suffix: "cape" },
 ];
@@ -136,6 +138,12 @@ const HODOR_WALK_STUFF_FRAME_PATHS = {
     `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-2.png`,
     `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-3.png`,
     `${HODOR_BASE_PATH}/Stuff/Boulet/Marche-Boulet/marche-boulet-4.png`,
+  ],
+  "Gants Collants": [
+    `${HODOR_BASE_PATH}/Stuff/Gant/marche-gant/marche-gant-1.png`,
+    `${HODOR_BASE_PATH}/Stuff/Gant/marche-gant/marche-gant-2.png`,
+    `${HODOR_BASE_PATH}/Stuff/Gant/marche-gant/marche-gant-3.png`,
+    `${HODOR_BASE_PATH}/Stuff/Gant/marche-gant/marche-gant-4.png`,
   ],
 };
 let hodorWalkAnimationTimer = null;
