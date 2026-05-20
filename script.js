@@ -434,7 +434,14 @@ async function setupCloudAuth() {
 }
 
 async function applySession(session) {
-  cloudState.user = session?.user || null;
+  const nextUser = session?.user || null;
+  const sameLoadedUser = Boolean(nextUser && cloudState.user?.id === nextUser.id && cloudState.loaded);
+  cloudState.user = nextUser;
+  if (sameLoadedUser) {
+    updateAccountUi();
+    return;
+  }
+
   cloudState.profile = null;
   cloudState.loaded = false;
   if (!cloudState.user) {
@@ -603,7 +610,7 @@ async function signOutAccount() {
   cloudState.user = null;
   cloudState.profile = null;
   cloudState.loaded = false;
-  resetRunCarryover();
+  resetGuestProgress();
   updateAccountUi();
   closeAccountPopover();
   openAccountPanel();
@@ -713,7 +720,7 @@ function sendReturningPlayerToVillage() {
   state.floor = 0;
   state.life = state.maxLife;
   state.hodorPose = "walk";
-  setStory("Hodor retrouve le village. Personne ne sait comment, mais tout le monde prefere ne pas poser la question.", "neutral");
+  setStory("Hodor retrouve le village. Le garde a l'entree pretend que c'etait prevu.", "neutral");
 }
 
 function resetRunCarryover() {
@@ -725,6 +732,26 @@ function resetRunCarryover() {
   state.doorHints = [];
   state.pendingCoinGain = 0;
   state.pendingPurseLoss = false;
+}
+
+function resetGuestProgress() {
+  resetRunCarryover();
+  state.bankGold = 0;
+  state.upgrades = {};
+  state.stats = { losses: 0, wins: 0, goldBankedTotal: 0 };
+  state.runLosses = 0;
+  state.life = START_LIFE;
+  state.maxLife = START_LIFE;
+  fallbackBankGold = 0;
+  fallbackUpgrades = {};
+  fallbackStats = { losses: 0, wins: 0, goldBankedTotal: 0 };
+  try {
+    localStorage.removeItem(BANK_KEY);
+    localStorage.removeItem(UPGRADES_KEY);
+    localStorage.removeItem(STATS_KEY);
+  } catch {
+    // La sauvegarde locale peut etre indisponible.
+  }
 }
 
 function queueCloudSave() {
@@ -1127,6 +1154,7 @@ function openShop() {
   state.hodorPose = "walk";
   state.showWinBanner = false;
   state.villageLocation = "Echoppe";
+  setStory("Le vendeur sourit comme quelqu'un qui a deja compte ton argent deux fois.");
   renderShop();
   render();
 }
@@ -1145,6 +1173,8 @@ function openStatsPanel() {
   statsPanelOpen = true;
   shopPanelOpen = false;
   state.showWinBanner = false;
+  state.villageLocation = "Panneau d'affichage";
+  setStory("Le panneau d'affichage liste tes exploits avec une ponctuation humiliante.");
   render();
 }
 
@@ -1189,6 +1219,7 @@ function chooseDoor(door) {
 
   clearDungeonEffectPoseTimer();
   stopDungeonDoorWalkPreview();
+  setDungeonDoorTarget(door.dataset.door);
   door.blur();
   flashDoor(door);
   state.inputLocked = true;
@@ -1200,6 +1231,7 @@ function chooseDoor(door) {
 
 function previewDungeonDoorWalk(event) {
   if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer || event.currentTarget.disabled) return;
+  setDungeonDoorTarget(event.currentTarget.dataset.door);
   state.hodorPose = "walk";
   renderHodor();
 }
@@ -1208,6 +1240,7 @@ function previewDungeonDoorWalkFromPointer(event) {
   if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer) return;
   const door = event.target.closest(".door");
   if (door && !door.disabled) {
+    setDungeonDoorTarget(door.dataset.door);
     if (state.hodorPose !== "walk") {
       state.hodorPose = "walk";
       renderHodor();
@@ -1215,6 +1248,7 @@ function previewDungeonDoorWalkFromPointer(event) {
     return;
   }
   if (state.hodorPose === "walk") {
+    setDungeonDoorTarget(null);
     state.hodorPose = "question";
     renderHodor();
   }
@@ -1222,6 +1256,7 @@ function previewDungeonDoorWalkFromPointer(event) {
 
 function stopDungeonDoorWalkPreview() {
   if (state.screen !== "dungeon" || state.inputLocked || dungeonEffectPoseTimer) return;
+  setDungeonDoorTarget(null);
   state.hodorPose = "question";
   renderHodor();
 }
@@ -1254,9 +1289,11 @@ function resolveDoorChoice() {
 }
 
 function clearDungeonEffectPoseTimer() {
-  if (!dungeonEffectPoseTimer) return;
-  window.clearTimeout(dungeonEffectPoseTimer);
+  if (dungeonEffectPoseTimer) {
+    window.clearTimeout(dungeonEffectPoseTimer);
+  }
   dungeonEffectPoseTimer = null;
+  setDungeonDoorTarget(null);
   $("scene")?.classList.remove("is-effect-pose");
 }
 
@@ -1265,6 +1302,7 @@ function holdDungeonEffectPoseBriefly() {
   if (state.screen !== "dungeon" || state.inputLocked) return;
 
   const effectPose = state.hodorPose || "question";
+  setDungeonDoorTarget(null);
   $("scene")?.classList.add("is-effect-pose");
   dungeonEffectPoseTimer = window.setTimeout(() => {
     dungeonEffectPoseTimer = null;
@@ -1283,14 +1321,14 @@ function finalDoorOutcome() {
     state.runEnded = true;
     state.life = state.maxLife;
     recordWin();
-    return "La derniere porte s'ouvre enfin. Dehors, le village fait semblant d'avoir cru en Hodor depuis le debut.";
+    return "La derniere porte s'ouvre enfin. Dehors, le village cache mal sa surprise.";
   }
 
   if (roll < 0.92) {
-    return takeDamage(1, "La derniere porte s'ouvre sur deux gardes qui attendaient la pause cafe. Ils improvisent avec ton visage. -1 coeur.");
+    return takeDamage(1, "La derniere porte s'ouvre sur deux gardes en pause cafe. Ton visage devient l'ordre du jour. -1 coeur.");
   }
 
-  return takeDamage(2, "La derniere porte avait une pancarte 'Sortie'. C'etait juridiquement discutable. Le mur derriere la porte te l'explique. -2 coeur.");
+  return takeDamage(2, "La derniere porte disait 'Sortie'. Le mur derriere appelle ca du marketing. -2 coeur.");
 }
 
 function prepareDoorHints() {
@@ -1318,10 +1356,11 @@ function doorHintPool(level) {
       "ca sent la cave humide",
       "bruit de pieces",
       "ronflement pas rassurant",
+      "odeur de decision nulle",
     ],
     false: [
       "panneau menteur",
-      "promis juré, aucun piege",
+      "promis jure, aucun piege",
       "odeur de victoire douteuse",
       "ca a l'air presque legal",
       "le donjon insiste beaucoup",
@@ -1334,13 +1373,15 @@ function doorHintPool(level) {
       "bruit de ferraille en colere",
       "escalier quelque part, peut-etre meme utile",
       "air frais, ou cadavre tres poli",
-      "quelque chose gratte la porte"
+      "quelque chose gratte la porte",
+      "butin possible, humiliation certaine"
     );
     base.false.push(
       "un bruit louche, ou juste un mensonge administratif",
       "la porte fait semblant d'etre gentille",
       "ca clignote comme une mauvaise idee",
-      "l'inscription a ete ecrite par un mur"
+      "l'inscription a ete ecrite par un mur",
+      "tres bon choix selon la porte"
     );
   }
 
@@ -1350,13 +1391,15 @@ function doorHintPool(level) {
       "ca ressemble a du butin",
       "risque de baffe, pas forcement de mort",
       "possible raccourci vertical",
-      "odeur de boutique sans vendeur"
+      "odeur de boutique sans vendeur",
+      "statistiquement moins honteux"
     );
     base.false.push(
       "indice premium, donc probablement nul",
       "la porte essaye trop fort",
       "statistiquement ridicule, donc tentant",
-      "Hodor comprend l'indice, mauvais signe"
+      "Hodor comprend l'indice, mauvais signe",
+      "le panneau transpire la confiance"
     );
   }
 
@@ -1367,7 +1410,7 @@ function startCombat(monster) {
   state.screen = "combat";
   state.combat = monster;
   state.hodorPose = "combat";
-  return `${monster.intro} Hodor doit choisir une strategie, ce qui est deja un piege.`;
+  return `${monster.intro} Hodor doit choisir une strategie, ce qui surestime tout le monde.`;
 }
 
 function resolveCombat(strike) {
@@ -1428,7 +1471,7 @@ function combatOutcome(monster, strike) {
   const strikeText = strikeLabel(strike);
 
   if (roll < deathChance) {
-    return useCombatItems(instantDeath(`Tu tentes de ${strikeText}. ${monster.name} repond avec une violence pedagogique.`), usedItems);
+    return useCombatItems(instantDeath(`Tu tentes de ${strikeText}. ${monster.name} corrige ton optimisme.`), usedItems);
   }
 
   if (roll < deathChance + profile.loseItem && state.inventory.length) {
@@ -1437,15 +1480,15 @@ function combatOutcome(monster, strike) {
   }
 
   if (roll < deathChance + profile.loseItem + profile.hurt) {
-    return useCombatItems(takeDamage(1, `Tu tentes de ${strikeText}. ${monster.name} trouve ton plan nul et te le prouve. -1 coeur.`), usedItems);
+    return useCombatItems(takeDamage(1, `Tu tentes de ${strikeText}. ${monster.name} refuse ton brouillon tactique. -1 coeur.`), usedItems);
   }
 
   if (roll < deathChance + profile.loseItem + profile.hurt + winChance) {
     const gold = randomInt(monster.reward[0], monster.reward[1]);
-    return useCombatItems(addGold(gold, `Tu tentes de ${strikeText}. Contre toute logique, ca marche. +${gold} PO.`), usedItems);
+    return useCombatItems(addGold(gold, `Tu tentes de ${strikeText}. Le hasard fait semblant d'etre ton ami. +${gold} PO.`), usedItems);
   }
 
-  return useCombatItems(`Tu tentes de ${strikeText}. Vous vous ratez tous les deux. C'est presque choregraphie.`, usedItems);
+  return useCombatItems(`Tu tentes de ${strikeText}. Vous vous ratez tous les deux. Le silence juge la scene.`, usedItems);
 }
 
 function useCombatItems(text, items) {
@@ -1460,7 +1503,7 @@ function useCombatItems(text, items) {
         state.life = Math.min(state.life, state.maxLife);
       }
     } else {
-      return `${text} ${item} a servi, mais ne casse pas cette fois. Miracle comptable.`;
+      return `${text} ${item} a servi, mais ne casse pas cette fois. Le materiel demande des temoins.`;
     }
   }
 
@@ -1515,10 +1558,10 @@ function koTaunt() {
   const losses = Math.max(1, state.runLosses);
   const taunts = [
     "T'as perdu, gros nul.",
-    `Ca fait ${losses} fois que tu perds. Le donjon garde les tickets.`,
-    `${losses} defaite${losses > 1 ? "s" : ""}. A ce stade, c'est presque une competence.`,
-    "Retour aux geoles. Meme la porte a soupire.",
-    `Encore perdu. Hodor invente le speedrun de l'echec numero ${losses}.`,
+    `Ca fait ${losses} fois que tu perds. Le donjon commence une carte de fidelite.`,
+    `${losses} defaite${losses > 1 ? "s" : ""}. Le village parle de toi a voix basse.`,
+    "Retour aux geoles. Meme la serrure avait pitie.",
+    `Encore perdu. Hodor perfectionne l'art de revenir moins fier.`,
   ];
   return taunts[(losses - 1) % taunts.length];
 }
@@ -1526,9 +1569,9 @@ function koTaunt() {
 function winTaunt() {
   const wins = Math.max(1, state.stats.wins);
   const taunts = [
-    "T'as gagne, t'es trop notre heros. Personne n'avait prevu ce scenario.",
+    "T'as gagne, t'es trop notre heros. La mairie verifie si c'est legal.",
     "Hodor est vivant. Le village applaudit par prudence.",
-    `Sortie numero ${wins}. La competence commence a ressembler a un accident repetable.`,
+    `Sortie numero ${wins}. Le hasard demande a etre credite.`,
   ];
   return taunts[(wins - 1) % taunts.length];
 }
@@ -1538,14 +1581,14 @@ function villageShameText() {
   const losses = state.stats.losses || 0;
   const balance = wins - losses;
 
-  if (wins === 0 && losses === 0) return "Dignite : pas encore mesuree";
-  if (balance >= 8) return "Dignite : legendaire";
-  if (balance >= 5) return "Dignite : formidable";
-  if (balance >= 2) return "Dignite : presque propre";
-  if (balance >= 0) return "Dignite : fragile mais presente";
+  if (wins === 0 && losses === 0) return "Dignite : pas encore abimee";
+  if (balance >= 8) return "Dignite : suspectement haute";
+  if (balance >= 5) return "Dignite : presque reconnue";
+  if (balance >= 2) return "Dignite : tient avec une ficelle";
+  if (balance >= 0) return "Dignite : fragile mais comptable";
   if (balance >= -2) return "Dignite : cabossee";
-  if (balance >= -5) return "Dignite : merdique";
-  return "Dignite : portee disparue au combat";
+  if (balance >= -5) return "Dignite : vendue en lot";
+  return "Dignite : vue pour la derniere fois pres d'une trappe";
 }
 
 function flashDoor(door) {
@@ -1558,12 +1601,22 @@ function flashDoor(door) {
 
 function resetDoorEffects() {
   $("doors").classList.remove("resolving");
+  setDungeonDoorTarget(null);
   document.querySelectorAll(".door").forEach((door) => {
     door.classList.remove("chosen");
     door.blur();
   });
   if (document.activeElement?.classList?.contains("door")) {
     document.activeElement.blur();
+  }
+}
+
+function setDungeonDoorTarget(doorIndex) {
+  const scene = $("scene");
+  if (!scene) return;
+  scene.classList.remove("door-target-0", "door-target-1", "door-target-2");
+  if (doorIndex === "0" || doorIndex === "1" || doorIndex === "2") {
+    scene.classList.add(`door-target-${doorIndex}`);
   }
 }
 
@@ -1709,15 +1762,15 @@ function sellInventory() {
 
 function bankDepositText(deposited, soldItems) {
   if (!deposited && !soldItems.total && !soldItems.details.length) {
-    return "Le banquier regarde ta bourse vide, soupire, puis referme son registre avec beaucoup de professionnalisme.";
+    return "Le banquier regarde ta bourse vide. Il tamponne quand meme un papier pour se sentir puissant.";
   }
 
   const lines = [];
   if (deposited) {
-    lines.push("Le banquier depose ta bourse dans le coffre.");
+    lines.push("Le banquier pese ta bourse et retient un rire commercial.");
   }
   if (soldItems.details.length) {
-    lines.push("Il revend aussi tes objets avec une joie trop visible.");
+    lines.push("Il revend aussi tes objets avant meme de demander ton avis.");
   }
   lines.push(`Total sauvegarde : ${deposited + soldItems.total} PO.`);
   return lines.join(" ");
@@ -1800,11 +1853,11 @@ function randomDungeonItemText() {
     "Medaillon du Presque-Heros": "Tu ramasses un medaillon du presque-heros. Il brille comme une promesse pas tenue.",
     "Sandales de Panique": "Tu trouves des sandales de panique. Elles tremblent deja sans toi.",
     "Hache Emoussee": "Tu recuperes une hache emoussee. Elle menace surtout la patience des ennemis.",
-    "Boulet au Pied": "Tu trouves un boulet au pied. Hodor appelle ca un accessoire de caractere.",
-    "Chaussette Porte-Bonheur": "Tu trouves une chaussette porte-bonheur. Elle sent la chance humide.",
-    "Caillou Affectif": "Tu adoptes un caillou affectif. Il ne sert a rien, mais il ecoute.",
-    "Cape Trop Longue": "Tu trouves une cape trop longue. Elle a deja fait tomber son ancien proprietaire.",
-    "Gants Collants": "Tu enfiles des gants collants. Ils ont l'air de connaitre trop de poches.",
+    "Boulet au Pied": "Tu trouves un boulet au pied. Il a l'air de vouloir une relation serieuse.",
+    "Chaussette Porte-Bonheur": "Tu trouves une chaussette porte-bonheur. Elle sent la victoire mal rangee.",
+    "Caillou Affectif": "Tu adoptes un caillou affectif. Il ne juge pas, avantage rare ici.",
+    "Cape Trop Longue": "Tu trouves une cape trop longue. Elle a deja enterre plusieurs ambitions.",
+    "Gants Collants": "Tu enfiles des gants collants. Ils connaissent des poches que tu n'as jamais vues.",
   };
   return addItem(item, texts[item] || `Tu trouves ${item}. Le donjon refuse d'expliquer pourquoi.`);
 }
@@ -2118,6 +2171,7 @@ function render() {
   $("scene").classList.toggle("story-neutral", state.storyTone === "neutral" && !isDead);
   $("bank-score").hidden = true;
   $("loss-score").hidden = isVillage || isShop;
+  placeHodorForScreen(isDungeon);
   renderHodor();
 
   $("location").textContent = isVillage
@@ -2133,6 +2187,7 @@ function render() {
             : "Couloirs du donjon";
 
   $("doors").hidden = !isDungeon;
+  $("dungeon-stage").hidden = !isDungeon;
   $("combat-choices").hidden = !isCombat;
   const monsterAsset = state.combat?.asset;
   const usesMonsterTarget = isCombat && Boolean(monsterAsset);
@@ -2173,6 +2228,18 @@ function render() {
 
   playPendingCoinAnimation();
   playPendingPurseLossAnimation();
+}
+
+function placeHodorForScreen(isDungeon) {
+  const hodor = document.querySelector(".hodor-sprite");
+  const dungeonStage = $("dungeon-stage");
+  const rewardRow = $("reward-row");
+  if (!hodor || !dungeonStage || !rewardRow) return;
+
+  const target = isDungeon ? dungeonStage : rewardRow;
+  if (hodor.parentElement !== target) {
+    target.appendChild(hodor);
+  }
 }
 
 function playPendingCoinAnimation() {
@@ -2262,7 +2329,7 @@ function renderHodor() {
   const assets = hodorLayerUrlsForInventory(pose);
   const poseClass = `pose-${pose}`;
   if (!hodor.classList.contains(poseClass)) {
-    hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-ko", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
+    hodor.classList.remove("pose-idle", "pose-walk", "pose-fuite", "pose-folie", "pose-question", "pose-releve", "pose-victory", "pose-hurt", "pose-ko", "pose-combat", "pose-combat-2", "pose-combat-3", "pose-dead");
     hodor.classList.add(poseClass);
   }
   hodor.style.backgroundImage = assets.map(cssAssetUrl).join(", ");

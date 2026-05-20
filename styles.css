@@ -1328,6 +1328,7 @@ h1 {
 }
 
 .hodor-sprite.pose-idle,
+.hodor-sprite.pose-folie,
 .hodor-sprite.pose-question {
   animation: hodorIdle 1600ms ease-in-out infinite alternate;
 }
@@ -4450,9 +4451,10 @@ h1 {
 
 /* Small UI requests: image-only notice board and floating settings bubble. */
 .account-menu {
-  left: auto;
-  right: clamp(8px, 1.4vw, 14px);
-  top: clamp(8px, 1.4dvh, 14px);
+  left: clamp(8px, 1.4vw, 14px);
+  right: auto;
+  top: auto;
+  bottom: clamp(8px, 1.4dvh, 14px);
   z-index: 1100;
 }
 
@@ -4468,8 +4470,8 @@ h1 {
 }
 
 .account-popover {
-  place-items: start end;
-  padding: clamp(58px, 8dvh, 70px) 12px 12px;
+  place-items: end start;
+  padding: 12px 12px clamp(58px, 8dvh, 70px);
 }
 
 .scene.is-village .notice-building .village-stat-title,
@@ -4480,7 +4482,7 @@ h1 {
 
 @media (max-width: 560px) {
   .account-popover {
-    padding-top: 54px;
+    padding-bottom: 54px;
   }
 }
 
@@ -4549,6 +4551,7 @@ h1 {
 }
 
 .scene.is-village .hodor-sprite.pose-idle,
+.scene.is-village .hodor-sprite.pose-folie,
 .scene.is-village .hodor-sprite.pose-question,
 .scene.is-village .hodor-sprite.pose-walk,
 .scene.is-village .hodor-sprite.pose-fuite,
@@ -4844,16 +4847,13 @@ h1 {
   }
 }
 
-/* Illustrated dungeon: same door buttons, staged on the interior background. */
+/* Dungeon stage: one fixed image coordinate system for background, doors, and Hodor. */
+.dungeon-stage {
+  display: none;
+}
+
 .scene.is-dungeon:not(.is-combat) {
-  --dungeon-hodor-x: 51.5%;
-  --dungeon-hodor-y: calc(24.5% - 40px);
-  --dungeon-hodor-size: clamp(118px, min(12vw, 19dvh), 196px);
-  --dungeon-door-w: clamp(66px, min(6.8vw, 12dvh), 112px);
-  background:
-    linear-gradient(180deg, rgba(5, 4, 4, 0.08), rgba(5, 4, 4, 0.26)),
-    url("assets/Donjon/Donjon-interieur.png") center calc(44% + 50px) / 84% 88% no-repeat,
-    linear-gradient(180deg, #2f2b24, #12100e);
+  background: linear-gradient(180deg, #2f2b24, #12100e);
 }
 
 .scene.is-dungeon:not(.is-combat)::after {
@@ -4875,7 +4875,7 @@ h1 {
 }
 
 .scene.is-dungeon:not(.is-combat) .reward-row {
-  z-index: 5;
+  z-index: 8;
   pointer-events: none;
 }
 
@@ -4884,26 +4884,59 @@ h1 {
   display: block;
   left: clamp(12px, 2.4%, 24px);
   bottom: clamp(12px, 2.4%, 24px);
-  z-index: 8;
   max-width: min(330px, 42%);
   pointer-events: none;
 }
 
 .scene.is-dungeon:not(.is-combat) .action-zone {
   z-index: 6;
-  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(84px, 13dvh, 112px) 8px 8px;
   border-top: 0;
   background: transparent;
+}
+
+.scene.is-dungeon:not(.is-combat) .dungeon-stage {
+  --dungeon-hodor-base-x: 51.5%;
+  --dungeon-hodor-base-y: 13.6%;
+  --dungeon-hodor-door-0-x: 69.5%;
+  --dungeon-hodor-door-0-y: 32.8%;
+  --dungeon-hodor-door-1-x: 69%;
+  --dungeon-hodor-door-1-y: 53.8%;
+  --dungeon-hodor-door-2-x: 69%;
+  --dungeon-hodor-door-2-y: 80.5%;
+  --dungeon-hodor-x: var(--dungeon-hodor-base-x);
+  --dungeon-hodor-y: var(--dungeon-hodor-base-y);
+  --dungeon-door-0-x: 78.5%;
+  --dungeon-door-0-y: 33%;
+  --dungeon-door-1-x: 77.5%;
+  --dungeon-door-1-y: 54%;
+  --dungeon-door-2-x: 78.8%;
+  --dungeon-door-2-y: 82%;
+  display: block;
+  position: relative;
+  flex: 0 0 auto;
+  width: min(100%, calc((100dvh - 190px) * 1024 / 1535));
+  height: auto;
+  aspect-ratio: 1024 / 1535;
+  overflow: visible;
+  background:
+    linear-gradient(180deg, rgba(5, 4, 4, 0.04), rgba(5, 4, 4, 0.1)),
+    url("assets/Donjon/Donjon-interieur.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.42));
 }
 
 .scene.is-dungeon:not(.is-combat) .hodor-sprite {
   position: absolute;
   left: var(--dungeon-hodor-x);
   top: var(--dungeon-hodor-y);
-  width: var(--dungeon-hodor-size);
+  z-index: 3;
+  width: clamp(68px, 15%, 152px);
+  max-width: 18%;
+  max-height: none;
   background-image: url("assets/Hodor V0.1/Corps/question.png");
-  max-width: 24%;
-  max-height: 31%;
   transform: translate(-50%, -50%);
   transform-origin: center bottom;
   transition:
@@ -4913,6 +4946,7 @@ h1 {
 }
 
 .scene.is-dungeon:not(.is-combat) .hodor-sprite.pose-idle,
+.scene.is-dungeon:not(.is-combat) .hodor-sprite.pose-folie,
 .scene.is-dungeon:not(.is-combat) .hodor-sprite.pose-question,
 .scene.is-dungeon:not(.is-combat) .hodor-sprite.pose-fuite,
 .scene.is-dungeon:not(.is-combat) .hodor-sprite.pose-releve,
@@ -4948,9 +4982,18 @@ h1 {
 
 .scene.is-dungeon:not(.is-combat) .door {
   position: absolute;
-  width: calc(var(--dungeon-door-w) + 10px);
-  height: calc((var(--dungeon-door-w) * 1.32) + 10px);
+  display: grid;
+  place-items: center;
+  width: 12%;
   max-width: none;
+  height: auto;
+  aspect-ratio: 0.75;
+  border: 1px solid rgba(216, 170, 61, 0.08);
+  border-radius: 50% 50% 12px 12px;
+  background: rgba(216, 170, 61, 0.015);
+  background-image: none;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
   transform-origin: center bottom;
   transition:
     opacity 420ms ease,
@@ -4959,127 +5002,170 @@ h1 {
 }
 
 .scene.is-dungeon:not(.is-combat) .door[data-door="0"] {
-  right: calc(18.8% + 10px);
-  top: calc(31% + 10px);
+  left: var(--dungeon-door-0-x);
+  top: var(--dungeon-door-0-y);
 }
 
 .scene.is-dungeon:not(.is-combat) .door[data-door="1"] {
-  right: calc(18.6% - 17px);
-  top: calc(51% - 26px);
-  width: calc(var(--dungeon-door-w) + 14px);
-  height: calc((var(--dungeon-door-w) * 1.32) + 16px);
+  left: var(--dungeon-door-1-x);
+  top: var(--dungeon-door-1-y);
+  width: 12%;
 }
 
 .scene.is-dungeon:not(.is-combat) .door[data-door="2"] {
-  right: calc(18.8% + 5px);
-  top: calc(72% + 20px);
+  left: var(--dungeon-door-2-x);
+  top: var(--dungeon-door-2-y);
 }
 
 .scene.is-dungeon:not(.is-combat) .door:hover:not(:disabled) {
-  transform: translateY(-5px) scale(1.06);
+  border-color: rgba(216, 170, 61, 0.32);
+  background: rgba(216, 170, 61, 0.08);
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="0"]:hover),
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="0"].chosen) {
-  --dungeon-hodor-x: 68%;
-  --dungeon-hodor-y: 38%;
+.scene.is-dungeon:not(.is-combat) .door-number {
+  display: none;
+  place-items: center;
+  width: clamp(18px, 30%, 30px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(216, 170, 61, 0.46);
+  border-radius: 50%;
+  background: rgba(27, 21, 13, 0.78);
+  color: #f2d36b;
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.72rem, 2.7vw, 0.95rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px #000;
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="1"]:hover),
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="1"].chosen) {
-  --dungeon-hodor-x: 68%;
-  --dungeon-hodor-y: 58%;
+.scene.is-dungeon:not(.is-combat) .door-knob {
+  display: none;
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="2"]:hover),
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="2"].chosen) {
-  --dungeon-hodor-x: 68%;
-  --dungeon-hodor-y: 79%;
+.scene.is-dungeon:not(.is-combat).door-target-0 .dungeon-stage {
+  --dungeon-hodor-x: var(--dungeon-hodor-door-0-x);
+  --dungeon-hodor-y: var(--dungeon-hodor-door-0-y);
+  background:
+    linear-gradient(180deg, rgba(5, 4, 4, 0.04), rgba(5, 4, 4, 0.1)),
+    url("assets/Donjon/Donjon-interieur-porte-1.png") center / 100% 100% no-repeat;
 }
 
-.scene.is-dungeon:not(.is-combat).is-effect-pose,
-.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover),
-.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) {
-  --dungeon-hodor-x: 51.5%;
-  --dungeon-hodor-y: calc(24.5% - 40px);
+.scene.is-dungeon:not(.is-combat).door-target-1 .dungeon-stage {
+  --dungeon-hodor-x: var(--dungeon-hodor-door-1-x);
+  --dungeon-hodor-y: var(--dungeon-hodor-door-1-y);
+  background:
+    linear-gradient(180deg, rgba(5, 4, 4, 0.04), rgba(5, 4, 4, 0.1)),
+    url("assets/Donjon/Donjon-interieur-porte-2.png") center / 100% 100% no-repeat;
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door:hover) .hodor-sprite,
-.scene.is-dungeon:not(.is-combat):has(.door.chosen) .hodor-sprite {
+.scene.is-dungeon:not(.is-combat).door-target-2 .dungeon-stage {
+  --dungeon-hodor-x: var(--dungeon-hodor-door-2-x);
+  --dungeon-hodor-y: var(--dungeon-hodor-door-2-y);
+  background:
+    linear-gradient(180deg, rgba(5, 4, 4, 0.04), rgba(5, 4, 4, 0.1)),
+    url("assets/Donjon/Donjon-interieur-porte-3.png") center / 100% 100% no-repeat;
+}
+
+.scene.is-dungeon:not(.is-combat).is-effect-pose .dungeon-stage {
+  --dungeon-hodor-x: var(--dungeon-hodor-base-x);
+  --dungeon-hodor-y: var(--dungeon-hodor-base-y);
+}
+
+.scene.is-dungeon:not(.is-combat).door-target-0 .hodor-sprite,
+.scene.is-dungeon:not(.is-combat).door-target-1 .hodor-sprite,
+.scene.is-dungeon:not(.is-combat).door-target-2 .hodor-sprite {
   filter: drop-shadow(0 28px 22px rgba(0, 0, 0, 0.5)) brightness(1.04);
 }
 
 .scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite {
+  left: var(--dungeon-hodor-base-x) !important;
+  top: var(--dungeon-hodor-base-y) !important;
   animation: none !important;
+  transform: translate(-50%, -50%) !important;
   filter: drop-shadow(0 28px 22px rgba(0, 0, 0, 0.5));
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="0"]:hover) .hodor-sprite,
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="0"].chosen) .hodor-sprite {
+.scene.is-dungeon:not(.is-combat).door-target-0 .hodor-sprite {
   animation: hodorPathDoorOne 1150ms cubic-bezier(0.22, 0.72, 0.24, 1) both;
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="1"]:hover) .hodor-sprite,
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="1"].chosen) .hodor-sprite {
+.scene.is-dungeon:not(.is-combat).door-target-1 .hodor-sprite {
   animation: hodorPathDoorTwo 1350ms cubic-bezier(0.22, 0.72, 0.24, 1) both;
 }
 
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="2"]:hover) .hodor-sprite,
-.scene.is-dungeon:not(.is-combat):has(.door[data-door="2"].chosen) .hodor-sprite {
+.scene.is-dungeon:not(.is-combat).door-target-2 .hodor-sprite {
   animation: hodorPathDoorThree 1550ms cubic-bezier(0.22, 0.72, 0.24, 1) both;
-}
-
-.scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite,
-.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover) .hodor-sprite,
-.scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) .hodor-sprite {
-  left: 51.5% !important;
-  top: calc(24.5% - 40px) !important;
-  animation: none !important;
-  transform: translate(-50%, -50%) !important;
 }
 
 @keyframes hodorPathDoorOne {
   0% {
-    left: 51.5%;
-    top: calc(24.5% - 40px);
+    left: var(--dungeon-hodor-base-x);
+    top: var(--dungeon-hodor-base-y);
     transform: translate(-50%, -50%);
   }
 
-  32% {
+  36% {
     left: 34%;
-    top: 38%;
+    top: 30.5%;
     transform: translate(-50%, -50%) translateY(-2px);
   }
 
-  55% {
-    left: 35%;
-    top: 46%;
+  62% {
+    left: 44%;
+    top: 34.5%;
     transform: translate(-50%, -50%);
-  }
-
-  76% {
-    left: 52%;
-    top: 46%;
-    transform: translate(-50%, -50%) translateY(-2px);
   }
 
   100% {
-    left: 68%;
-    top: 38%;
+    left: var(--dungeon-hodor-door-0-x);
+    top: var(--dungeon-hodor-door-0-y);
     transform: translate(-50%, -50%);
   }
 }
 
 @keyframes hodorPathDoorTwo {
   0% {
-    left: 51.5%;
-    top: calc(24.5% - 40px);
+    left: var(--dungeon-hodor-base-x);
+    top: var(--dungeon-hodor-base-y);
+    transform: translate(-50%, -50%);
+  }
+
+  26% {
+    left: 34%;
+    top: 30.5%;
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+
+  52% {
+    left: 30%;
+    top: 46.5%;
+    transform: translate(-50%, -50%);
+  }
+
+  74% {
+    left: 46%;
+    top: 55.5%;
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+
+  100% {
+    left: var(--dungeon-hodor-door-1-x);
+    top: var(--dungeon-hodor-door-1-y);
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes hodorPathDoorThree {
+  0% {
+    left: var(--dungeon-hodor-base-x);
+    top: var(--dungeon-hodor-base-y);
     transform: translate(-50%, -50%);
   }
 
   22% {
     left: 34%;
-    top: 38%;
+    top: 36%;
     transform: translate(-50%, -50%) translateY(-2px);
   }
 
@@ -5089,70 +5175,34 @@ h1 {
     transform: translate(-50%, -50%);
   }
 
-  68% {
-    left: 43%;
-    top: 63%;
+  66% {
+    left: 30%;
+    top: 70%;
     transform: translate(-50%, -50%) translateY(-2px);
+  }
+
+  84% {
+    left: 48%;
+    top: 81%;
+    transform: translate(-50%, -50%);
   }
 
   100% {
-    left: 68%;
-    top: 58%;
-    transform: translate(-50%, -50%);
-  }
-}
-
-@keyframes hodorPathDoorThree {
-  0% {
-    left: 51.5%;
-    top: calc(24.5% - 40px);
-    transform: translate(-50%, -50%);
-  }
-
-  18% {
-    left: 34%;
-    top: 38%;
-    transform: translate(-50%, -50%) translateY(-2px);
-  }
-
-  36% {
-    left: 30%;
-    top: 52%;
-    transform: translate(-50%, -50%);
-  }
-
-  55% {
-    left: 30%;
-    top: 68%;
-    transform: translate(-50%, -50%) translateY(-2px);
-  }
-
-  75% {
-    left: 34%;
-    top: 82%;
-    transform: translate(-50%, -50%);
-  }
-
-  90% {
-    left: 52%;
-    top: 84%;
-    transform: translate(-50%, -50%) translateY(-2px);
-  }
-
-  100% {
-    left: 68%;
-    top: 79%;
+    left: var(--dungeon-hodor-door-2-x);
+    top: var(--dungeon-hodor-door-2-y);
     transform: translate(-50%, -50%);
   }
 }
 
 .scene.is-dungeon:not(.is-combat) .doors.resolving .door:not(.chosen) {
   opacity: 0.2;
-  transform: translateY(10px) scale(0.9);
+  transform: translate(-50%, -50%) scale(0.9);
+  pointer-events: none;
 }
 
 .scene.is-dungeon:not(.is-combat) .doors.resolving .door.chosen {
-  transform: translateY(-5px) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.06);
+  filter: brightness(1.12) drop-shadow(0 12px 14px rgba(0, 0, 0, 0.42));
 }
 
 .scene.is-dungeon:not(.is-combat) .door-hint {
@@ -5165,62 +5215,21 @@ h1 {
 }
 
 @media (max-width: 760px) {
-  .scene.is-dungeon:not(.is-combat) {
-    --dungeon-hodor-x: 51.5%;
-    --dungeon-hodor-y: calc(26% - 40px);
-    --dungeon-hodor-size: clamp(78px, 20vw, 132px);
-    --dungeon-door-w: clamp(42px, 11vw, 68px);
-    background:
-      linear-gradient(180deg, rgba(5, 4, 4, 0.08), rgba(5, 4, 4, 0.26)),
-      url("assets/Donjon/Donjon-interieur.png") center calc(44% + 50px) / 92% 88% no-repeat,
-      linear-gradient(180deg, #2f2b24, #12100e);
+  .scene.is-dungeon:not(.is-combat) .action-zone {
+    padding: clamp(96px, 18dvh, 144px) 5px 6px;
   }
 
-  .scene.is-dungeon:not(.is-combat).is-effect-pose,
-  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover),
-  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) {
-    --dungeon-hodor-x: 51.5%;
-    --dungeon-hodor-y: calc(26% - 40px);
-  }
-
-  .scene.is-dungeon:not(.is-combat).is-effect-pose .hodor-sprite,
-  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door:hover) .hodor-sprite,
-  .scene.is-dungeon:not(.is-combat).is-effect-pose:has(.door.chosen) .hodor-sprite {
-    left: 51.5% !important;
-    top: calc(26% - 40px) !important;
-  }
-
-  .scene.is-dungeon:not(.is-combat) .hodor-sprite {
-    max-width: 33%;
-    max-height: 25%;
-  }
-
-  .scene.is-dungeon:not(.is-combat) .door[data-door="0"] {
-    right: calc(17.5% + 10px);
-    top: calc(32% + 10px);
-  }
-
-  .scene.is-dungeon:not(.is-combat) .door[data-door="1"] {
-    right: calc(17.5% + 20px);
-    top: calc(52% + 10px);
-  }
-
-  .scene.is-dungeon:not(.is-combat) .door[data-door="2"] {
-    right: calc(17.5% + 5px);
-    top: calc(72.5% + 20px);
+  .scene.is-dungeon:not(.is-combat) .dungeon-stage {
+    --dungeon-hodor-base-y: 13.6%;
   }
 
   .scene.is-dungeon:not(.is-combat) .reward-panel {
     max-width: min(280px, 48%);
+    bottom: 64px;
   }
 }
 
 @media (max-width: 420px), (max-height: 640px) {
-  .scene.is-dungeon:not(.is-combat) {
-    --dungeon-hodor-size: clamp(82px, 22vw, 126px);
-    --dungeon-door-w: clamp(42px, 12vw, 66px);
-  }
-
   .scene.is-dungeon:not(.is-combat) .door-hint {
     width: min(140px, 42vw);
     font-size: 0.64rem;

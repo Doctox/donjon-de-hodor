@@ -2,12 +2,12 @@ const upgradeDefinitions = {
   cardio: {
     name: "Cardio Tragique",
     costs: [25, 60, 120],
-    description: "Au debut d'une run, bonne chance de gagner 1 coeur. Parfois Hodor se claque et perd 1 coeur a la place.",
+    description: "Au debut d'une run, bonne chance de gagner 1 coeur. Parfois l'entrainement gagne et Hodor perd 1 coeur.",
   },
   colis: {
     name: "Colis Suspect",
     costs: [30, 75, 140],
-    description: "Bonne chance de commencer avec un objet aleatoire. L'objet peut etre utile, idiot, ou carrement penible.",
+    description: "Bonne chance de commencer avec un objet aleatoire. Le colis n'a jamais promis d'etre gentil.",
   },
   instinct: {
     name: "Instinct Presque Fiable",
@@ -17,11 +17,11 @@ const upgradeDefinitions = {
   reflexes: {
     name: "Reflexes de Lache",
     costs: [35, 85, 160],
-    description: "Chance correcte d'esquiver un degat. Parfois Hodor esquive en sacrifiant un objet.",
+    description: "Chance correcte d'esquiver un degat. Parfois Hodor laisse un objet negocier a sa place.",
   },
   lecture: {
     name: "Lecture de Porte",
     costs: [45, 100, 190],
-    description: "Bonne chance d'afficher des indices sur les portes. Certains indices mentent, parce que le donjon aussi a le droit de s'amuser.",
+    description: "Bonne chance d'afficher des indices sur les portes. Certains mentent avec une belle confiance.",
   },
 };

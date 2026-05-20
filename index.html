@@ -178,22 +178,24 @@
         </div>
 
         <div class="action-zone" aria-label="Actions disponibles">
-          <div class="doors" id="doors">
-            <button class="door" type="button" data-door="0">
-              <span class="door-number">I</span>
-              <span class="door-knob"></span>
-              <span class="door-hint"></span>
-            </button>
-            <button class="door" type="button" data-door="1">
-              <span class="door-number">II</span>
-              <span class="door-knob"></span>
-              <span class="door-hint"></span>
-            </button>
-            <button class="door" type="button" data-door="2">
-              <span class="door-number">III</span>
-              <span class="door-knob"></span>
-              <span class="door-hint"></span>
-            </button>
+          <div class="dungeon-stage" id="dungeon-stage" aria-hidden="true" hidden>
+            <div class="doors" id="doors">
+              <button class="door" type="button" data-door="0">
+                <span class="door-number">I</span>
+                <span class="door-knob"></span>
+                <span class="door-hint"></span>
+              </button>
+              <button class="door" type="button" data-door="1">
+                <span class="door-number">II</span>
+                <span class="door-knob"></span>
+                <span class="door-hint"></span>
+              </button>
+              <button class="door" type="button" data-door="2">
+                <span class="door-number">III</span>
+                <span class="door-knob"></span>
+                <span class="door-hint"></span>
+              </button>
+            </div>
           </div>
 
           <div class="combat-choices" id="combat-choices" hidden>
@@ -221,20 +223,20 @@
               <span class="building-roof"></span>
               <span class="building-bank-total"><span id="bank-building-gold">0</span> PO</span>
               <strong>Banque</strong>
-              <small>Mettre les pieces a l'abri.</small>
+              <small>Confier l'or a pire que toi.</small>
             </button>
             <button class="building tavern-building" id="tavern-building" type="button">
               <span class="building-roof"></span>
               <strong>Taverne</strong>
-              <small>Boire, oublier, recommencer.</small>
+              <small>Boire un conseil peu fiable.</small>
             </button>
             <button class="building shop-building" id="shop-building" type="button">
               <span class="building-roof"></span>
               <strong>Echoppe Douteuse</strong>
-              <small>Acheter du progres vaguement legal.</small>
+              <small>Payer pour progresser de travers.</small>
             </button>
             <button class="building notice-building village-stat-card" id="stats-building" type="button" aria-label="Statistiques du village">
-              <span class="village-stat-title">Statistiques</span>
+              <span class="village-stat-title">Panneau d'affichage</span>
               <strong><span id="village-win-count">0</span> sorties miraculeuses</strong>
               <strong><span id="village-loss-count">0</span> humiliations</strong>
               <strong><span id="village-bank-count">0</span> PO planquees</strong>
